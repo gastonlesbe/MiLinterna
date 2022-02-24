@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/myBar"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:orientation="vertical"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <LinearLayout
+        android:id="@+id/myBar1"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_weight="0"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:background="@mipmap/bulb1_foreground" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_weight="0"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <SeekBar
+            android:id="@+id/seekBar1"
+            style="@style/MySeekBar"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="0"
+            android:progressDrawable="@android:drawable/editbox_background"
+            android:thumb="@android:drawable/btn_default" />
+
+        <ImageButton
+            android:id="@+id/btnClose"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_weight="0"
+            android:background="@mipmap/ic_close_foreground" />
+
+    </LinearLayout>
+
+</LinearLayout>

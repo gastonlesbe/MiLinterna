@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LuzEn Noti</string>
+    <string name="Notification">Notificación</string>
+    <string name="prenderlinterna">Presiona para prender la Linterna</string>
+    <string name="activaparashake">active para poder activar la linterna al sacudir el teléfono.</string>
+    <string name="emailme">Escribime un email</string>
+    <string name="rateme">Califica esta Aplicación</string>
+    <string name="shareapp">Comparte esta Aplicación</string>
+</resources>
