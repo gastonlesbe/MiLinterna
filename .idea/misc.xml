@@ -3,6 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable-hdpi/rounded_border4.xml" value="0.238" />
+        <entry key="app/src/main/res/drawable-mdpi-v11/rounded_border3.xml" value="0.21" />
+        <entry key="app/src/main/res/drawable-mdpi/popup_background.xml" value="0.21" />
+        <entry key="app/src/main/res/drawable-mdpi/trangle.xml" value="0.21" />
+        <entry key="app/src/main/res/drawable/rounded_border2.xml" value="0.121" />
         <entry key="app/src/main/res/layout/activity_dimer.xml" value="0.19429347826086957" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19429347826086957" />
       </map>

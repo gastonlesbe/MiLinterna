@@ -7,4 +7,8 @@
     <string name="emailme">Send me an Email</string>
     <string name="rateme">Rate this App</string>
     <string name="shareapp">Share This App</string>
+    <string name="permisionTitle">Permiso</string>
+    <string name="permisionText">Do you want the dimmer to control the brightness of the screen?</string>
+    <string name="NotoficacionOn">Turn Notification On</string>
+    <string name="NotificatrionOff">Turn Notification Off</string>
 </resources>

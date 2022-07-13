@@ -7,9 +7,9 @@ android {
         applicationId "lesbegueris.gaston.com.milinterna"
         minSdkVersion 21
         targetSdkVersion 32
-        versionName '1.5.8'
+        versionName '1.6.2'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        versionCode 58
+        versionCode 62
         resConfigs 'en', 'es', 'pt', 'en_US', 'pt_BR', 'en_GB', 'es_US', 'es_419', ''
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_8
@@ -54,6 +54,11 @@ dependencies {
     implementation 'junit:junit:4.13.2'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'androidx.core:core:1.7.0'
-    implementation 'com.appodeal.ads:sdk:'
 
+
+    implementation ('com.appodeal.ads:sdk:2.11.0.+') {
+        exclude group: 'com.appodeal.ads.sdk.networks', module: 'adcolony'
+        exclude group: 'com.appodeal.ads.sdk.networks', module: 'ironsource'
+        exclude group: 'com.appodeal.ads.sdk.networks', module: 'ogury'
+    }
 }

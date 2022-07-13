@@ -10,6 +10,7 @@ import android.app.Notification.Builder;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -29,8 +30,11 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.app.ActivityCompat;
+
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -46,7 +50,8 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
-
+import com.appodeal.ads.Appodeal;
+import com.appodeal.ads.RewardedVideoCallbacks;
 
 
 
@@ -87,6 +92,12 @@ public class LightActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Appodeal.initialize(this, "77043cce5169a8ba14f2b2a43e009d4853f76330ed9b8d11",  Appodeal.BANNER);
+        Appodeal.show(LightActivity.this, Appodeal.BANNER_BOTTOM);
+        Appodeal.setBannerViewId(R.id.appodealBannerView);
+        Appodeal.show(this, Appodeal.BANNER_VIEW);
+        Appodeal.getBannerView(this);
+        Appodeal.isLoaded(Appodeal.BANNER);
 
         isTorchOn = false;
 
@@ -118,6 +129,30 @@ public class LightActivity extends AppCompatActivity {
         SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true);
         if (isFirstRun) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogCustom));
+            //builder.setTitle(getResources().getString(R.string.permisionTitle));
+            builder.setMessage(getResources().getString(R.string.permisionText));
+
+
+            //Yes Button
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    writePermission();
+                   // Toast.makeText(getApplicationContext(), "Yes button Clicked", Toast.LENGTH_LONG).show();
+                    Log.i("Code2care ", "Yes button Clicked!");
+                }
+            });
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialog, int wich) {
+
+                }
+            });
+
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+
             // Code to run once
             SharedPreferences.Editor editor = wmbPreference.edit();
             editor.putBoolean("FIRSTRUN", false);
@@ -129,12 +164,13 @@ public class LightActivity extends AppCompatActivity {
         btnDimer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 startDimer();
 
             }
                                     }
         );
-        ibtnMenu = (ImageButton) findViewById(R.id.ibtnMenu);
+
         Intent intent = getIntent();
         isNotiOn = intent.getBooleanExtra("inNotiOn", isNotiOn);
         btnFlash = (ImageButton) findViewById((R.id.btnFlash));
@@ -203,6 +239,7 @@ public class LightActivity extends AppCompatActivity {
             boolean settingsCanWrite = Settings.System.canWrite(this);
 
             if (!settingsCanWrite) {
+
                 Intent d = new Intent(LightActivity.this, DimerBright.class);
                 startActivity(d);
                 //close();
@@ -214,6 +251,16 @@ public class LightActivity extends AppCompatActivity {
             Intent d = new Intent(LightActivity.this, DimerBright.class);
             startActivity(d);
         }
+    }
+    private void writePermission(){
+        //permiso de escritura necesario para dimer
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.System.canWrite(getApplicationContext())) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, 200);
+            }
+        }
+
     }
 
     private void help() {
@@ -254,11 +301,11 @@ public class LightActivity extends AppCompatActivity {
     private void lightOn() {
         try {
             if (isTorchOn) {
-                imagebutton.setBackgroundResource((R.mipmap.ic_switch3on_foreground));
+                imagebutton.setBackgroundResource((R.drawable.switch4on));
                 turnOffFlashLight();
                 isTorchOn = false;
             } else {
-                imagebutton.setBackgroundResource(R.mipmap.ic_switch3off_foreground);
+                imagebutton.setBackgroundResource(R.drawable.switch4off);
                 turnOnFlashLight();
                 isTorchOn = true;
             }
@@ -267,7 +314,7 @@ public class LightActivity extends AppCompatActivity {
         }
         if (isFlash) {
             if (!isOn) {
-                imagebutton.setBackgroundResource((R.mipmap.ic_switch3on_foreground));
+                imagebutton.setBackgroundResource((R.drawable.switch4on));
                 // releaseCameraAndPreview();
 
 
@@ -282,7 +329,7 @@ public class LightActivity extends AppCompatActivity {
                 }
                 isOn = true;
             } else {
-                imagebutton.setBackgroundResource(R.mipmap.ic_switch3off_foreground);
+                imagebutton.setBackgroundResource(R.drawable.switch4off);
 
 
                // Toast.makeText(getApplicationContext(), R.string.Notification, Toast.LENGTH_LONG).show();
@@ -473,6 +520,7 @@ public class LightActivity extends AppCompatActivity {
         }
     }
 
+
     public PendingIntent getLaunchIntent(int notificationId, Context context) {
 
 
@@ -518,15 +566,18 @@ public class LightActivity extends AppCompatActivity {
     }
 
 
+
             // @Override
             public void onClick (View v){
                 // TODO Auto-generated method stub
-                if (v.getId() == R.id.btnNoti || v.getId() == R.id.btnFlash || v.getId() == R.id.btnShake
-                        || v.getId() == R.id.ibtnMenu) {
+                //if (v.getId() == R.id.btnNoti || v.getId() == R.id.btnFlash || v.getId() == R.id.btnShake
+                        // v.getId() == R.id.ibtnMenu)
+                 {
 
 
 
-                } else if (v.getId() == R.id.ibtnMenu) {
+                }// else if (v.getId() == R.id.ibtnMenu)
+                 {
                 }
 
             }

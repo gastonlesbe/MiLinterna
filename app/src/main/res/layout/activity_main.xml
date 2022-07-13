@@ -12,20 +12,10 @@
     tools:context="lesbegueris.gaston.com.milinterna.LightActivity">
 
 
-    <ImageButton
-        android:id="@+id/ibtnMenu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_weight="0"
-        android:background="@drawable/ic_menu"
-        android:contentDescription="@string/todo"
-        android:visibility="invisible" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
+        android:background="#63625f"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -69,10 +59,25 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:background="@drawable/rounded_border2"
+                android:layout_margin="10dp"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="end"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/btnNoti"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/switch4off"
+                        android:contentDescription="@string/todo"
+                        android:scaleType="fitCenter" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -86,24 +91,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:layout_weight="1"
-                        android:text="@string/prenderlinterna" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="end"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:id="@+id/btnNoti"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@mipmap/ic_switch3off_foreground"
-                        android:contentDescription="@string/todo"
-                        android:padding="30dp"
-                        android:scaleType="fitCenter" />
-
+                        android:text="@string/prenderlinterna"
+                        android:textColor="@color/launcher_background"
+                        android:textSize="20sp" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -114,7 +104,8 @@
                 android:layout_margin="20dp"
                 android:background="@drawable/rounded_border2"
                 android:gravity="center_horizontal"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -152,24 +143,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:background="@drawable/rounded_border2"
+                android:layout_margin="10dp"
                 android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:text="@string/dimer" />
-                </LinearLayout>
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -179,17 +155,37 @@
 
                     <ImageButton
                         android:id="@+id/btnDimer"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_margin="10dp"
-                        android:background="@mipmap/ic_bulbon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/dimmer4"
                         android:contentDescription="@string/todo" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="@string/dimer"
+                        android:textColor="@color/launcher_background"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
             </LinearLayout>
+
         </LinearLayout>
 
-
+        <com.appodeal.ads.BannerView
+            android:id="@+id/appodealBannerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
     </LinearLayout>
 

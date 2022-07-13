@@ -7,4 +7,8 @@
     <string name="emailme">Escribime un email</string>
     <string name="rateme">Califica esta Aplicación</string>
     <string name="shareapp">Comparte esta Aplicación</string>
+    <string name="permisionTitle">Permiso</string>
+    <string name="permisionText">¿Desea que el dimmer controle el brillo de la pantalla?</string>
+    <string name="NotoficacionOn">Activar icono en la barra de Notificaciones</string>
+    <string name="NotificatrionOff">Desactivar icono en la barra de Notificaciones</string>
 </resources>
