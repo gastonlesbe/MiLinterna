@@ -2,15 +2,15 @@ apply plugin: 'com.android.application'
 
 
 android {
-    compileSdkVersion 32
+    compileSdk 34
     defaultConfig {
         applicationId "lesbegueris.gaston.com.milinterna"
         minSdkVersion 21
-        targetSdkVersion 32
-        versionName '1.5.8'
+        targetSdk 34
+        versionName '1.7.2'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        versionCode 58
-        resConfigs 'en', 'es', 'pt', 'en_US', 'pt_BR', 'en_GB', 'es_US', 'es_419', ''
+        versionCode 72
+        resourceConfigurations += ['en', 'es', 'pt', 'en_US', 'pt_BR', 'en_GB', 'es_US', 'es_419', '']
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_8
             targetCompatibility JavaVersion.VERSION_1_8
@@ -33,13 +33,16 @@ android {
     lint {
         checkReleaseBuilds false
     }
-    buildToolsVersion '32.0.0'
+    buildToolsVersion '34.0.0'
+    namespace 'lesbegueris.gaston.com.milinterna'
 
 
 }
 allprojects {
-    tasks.withType(JavaCompile) {
-        options.compilerArgs << "-Xlint:deprecation"
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            options.compilerArgs << "-Xlint:deprecation"
+        }
     }
 }
 dependencies {
@@ -48,12 +51,21 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-    implementation 'com.google.android.gms:play-services-ads:20.6.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.gms:play-services-ads:23.2.0'
     implementation 'junit:junit:4.13.2'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'androidx.core:core:1.7.0'
-    implementation 'com.appodeal.ads:sdk:'
+    implementation 'androidx.core:core:1.13.1'
+    implementation 'androidx.test.ext:junit:1.2.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
 
+    // Appodeal SDK (declared only once)
+    implementation("com.appodeal.ads:sdk:3.3.2.0") {
+        exclude group: "com.appodeal.ads.sdk.services", module: "adjust"
+        exclude group: "com.appodeal.ads.sdk.services", module: "appsflyer"
+        exclude group: "com.appodeal.ads.sdk.services", module: "facebook_analytics"
+        exclude group: "com.appodeal.ads.sdk.services", module: "firebase"
+        exclude group: "com.appodeal.ads.sdk.services", module: "sentry_analytics"
+    }
 }
+
+

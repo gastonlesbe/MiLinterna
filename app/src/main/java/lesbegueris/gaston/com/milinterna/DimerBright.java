@@ -118,7 +118,7 @@ private void updateBackground()
         );
         }
 */
-                    }
+                   }
 
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {

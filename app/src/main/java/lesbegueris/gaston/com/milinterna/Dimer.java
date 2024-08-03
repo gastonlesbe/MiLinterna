@@ -15,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.initialization.InitializationStatus;
@@ -43,10 +44,6 @@ public class Dimer extends Activity {
         setContentView(R.layout.activity_dimer);
         //Toolbar toolbar = findViewById(R.id.toolbar);
         // setSupportActionBar(toolbar);
-
-
-
-
 
         mContext = getApplicationContext();
 
@@ -78,7 +75,7 @@ public class Dimer extends Activity {
 //    private SeekBar.OnSeekBarChangeListener seekBarChangeListener
         //        = new SeekBar.OnSeekBarChangeListener()
         seekBar1.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener() {
+                new OnSeekBarChangeListener() {
                     int sliderValue;
 
 

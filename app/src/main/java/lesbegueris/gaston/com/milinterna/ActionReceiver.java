@@ -22,7 +22,7 @@ public class ActionReceiver extends BroadcastReceiver {
         }
         //This is used to close the notification tray
         Intent it = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        context.sendBroadcast(it);
+       // context.sendBroadcast(it);
     }
 
     public void performAction1(){

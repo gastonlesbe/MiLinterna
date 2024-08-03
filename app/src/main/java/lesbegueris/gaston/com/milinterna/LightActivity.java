@@ -28,7 +28,9 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -39,15 +41,21 @@ import androidx.core.content.ContextCompat;
 import static lesbegueris.gaston.com.milinterna.NotificationLight.CHANNEL_ID;
 
 
+import com.appodeal.ads.initializing.ApdInitializationCallback;
 import com.google.android.gms.ads.AdRequest;
 
 
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.appodeal.ads.Appodeal;
+import com.appodeal.ads.BannerCallbacks;
+import com.appodeal.ads.initializing.ApdInitializationError;
+import com.appodeal.ads.utils.Log.LogLevel;
 
-
-
+import java.util.List;
 
 
 /**
@@ -82,11 +90,28 @@ public class LightActivity extends AppCompatActivity {
     private static final String SHOWCASE_ID = "sequence example";
 
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Appodeal.setTesting(true);
+        Appodeal.setBannerViewId(R.id.appodeal_banner_view);
+        Appodeal.initialize(LightActivity.this, "77043cce5169a8ba14f2b2a43e009d4853f76330ed9b8d11", Appodeal.BANNER, new ApdInitializationCallback() {
+            @Override
+            public void onInitializationFinished(@Nullable List<ApdInitializationError> errors) {
+                // Appodeal initialization finished
+            }
+        });
+        Appodeal.isLoaded(Appodeal.BANNER);
+        Appodeal.setAutoCache(Appodeal.BANNER, false);
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+
+
 
         isTorchOn = false;
 
@@ -250,7 +275,7 @@ public class LightActivity extends AppCompatActivity {
         intent.putExtra(Intent.EXTRA_SUBJECT, "Desde My Lupa");
         startActivity(Intent.createChooser(intent, ""));
     }
-    
+
     private void lightOn() {
         try {
             if (isTorchOn) {
@@ -285,7 +310,7 @@ public class LightActivity extends AppCompatActivity {
                 imagebutton.setBackgroundResource(R.mipmap.ic_switch3off_foreground);
 
 
-               // Toast.makeText(getApplicationContext(), R.string.Notification, Toast.LENGTH_LONG).show();
+                // Toast.makeText(getApplicationContext(), R.string.Notification, Toast.LENGTH_LONG).show();
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         mCameraManager.setTorchMode(mCameraId, false);
@@ -312,7 +337,7 @@ public class LightActivity extends AppCompatActivity {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mCameraManager.setTorchMode(mCameraId, true);
-               // playOnOffSound();
+                // playOnOffSound();
                 //mTorchOnOffButton.setImageResource(R.drawable.on);
             }
         } catch (Exception e) {
@@ -326,7 +351,7 @@ public class LightActivity extends AppCompatActivity {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mCameraManager.setTorchMode(mCameraId, false);
-               // playOnOffSound();
+                // playOnOffSound();
                 //mTorchOnOffButton.setImageResource(R.drawable.off);
 
             }
@@ -356,7 +381,7 @@ public class LightActivity extends AppCompatActivity {
             editor.apply();
             editor.commit();
             isNotiOn = false;
-            
+
         }
 
     }
@@ -380,12 +405,12 @@ public class LightActivity extends AppCompatActivity {
 
 
         Intent intent1 = new Intent(this, LightActivity.class);
-        PendingIntent pIntent1 = PendingIntent.getActivity(this, 0, intent1, 0);
+        PendingIntent pIntent1 = PendingIntent.getActivity(this, 0, intent1, PendingIntent.FLAG_IMMUTABLE);
         sendBroadcast(intent1);
         intent1.putExtra("isNotiOn", true);
 
         Intent intent2 = new Intent(this, DimerBright.class);
-        PendingIntent pIntent2 = PendingIntent.getActivity(this, 0, intent2, 0);
+        PendingIntent pIntent2 = PendingIntent.getActivity(this, 0, intent2, PendingIntent.FLAG_IMMUTABLE);
         sendBroadcast(intent2);
         intent1.putExtra("isNotiOn", true);
 
@@ -393,9 +418,9 @@ public class LightActivity extends AppCompatActivity {
         Intent intentAction = new Intent(this, ActionReceiver.class);
 
         //This is optional if you have more than one buttons and want to differentiate between two
-        intentAction.putExtra("action","action1");
+        intentAction.putExtra("action", "action1");
         //intentAction.putExtra("action2","action2");
-       PendingIntent pIntentlogin = PendingIntent.getBroadcast(this,1,intentAction,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pIntentlogin = PendingIntent.getBroadcast(this, 1, intentAction, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         CharSequence titulo = getText(R.string.app_name);
         if (isFlash) {
@@ -408,7 +433,7 @@ public class LightActivity extends AppCompatActivity {
                 builder.addAction(R.drawable.buttonon, "APP", pIntent1);
                 builder.addAction(R.drawable.bulbon, "DIMMER", pIntent2);
                 builder.setOngoing(true);
-               // builder.addAction(R.drawable.ic_notion,"OPEN", pIntent1);
+                // builder.addAction(R.drawable.ic_notion,"OPEN", pIntent1);
                 builder.setPriority(NotificationCompat.PRIORITY_HIGH);
                 Notification notification = builder.build();
 
@@ -418,6 +443,16 @@ public class LightActivity extends AppCompatActivity {
 
 
                 NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
                 notificationManagerCompat.notify(304, notification);
 
 
@@ -487,7 +522,7 @@ public class LightActivity extends AppCompatActivity {
         //Intent intent2 = new Intent(context, DimerBright.class);
         //intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         //intent1.putExtra("notificationId", notificationId);
-        return PendingIntent.getActivity(context, 0, intentAction, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getActivity(context, 0, intentAction, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
 
@@ -530,6 +565,7 @@ public class LightActivity extends AppCompatActivity {
                 }
 
             }
+
 
         }
 

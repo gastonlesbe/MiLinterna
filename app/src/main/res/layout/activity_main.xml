@@ -189,8 +189,14 @@
             </LinearLayout>
         </LinearLayout>
 
+        <com.appodeal.ads.BannerView
+            android:id="@+id/appodeal_banner_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
 
     </LinearLayout>
+
+
 
 </LinearLayout>
