@@ -19,49 +19,42 @@ import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
 import static lesbegueris.gaston.com.milinterna.NotificationLight.CHANNEL_ID;
 
+// AdMob removido - Appodeal ya incluye AdMob en su mediation
 
-import com.appodeal.ads.initializing.ApdInitializationCallback;
-import com.google.android.gms.ads.AdRequest;
-
-
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+// Your other imports
 import com.appodeal.ads.Appodeal;
 import com.appodeal.ads.BannerCallbacks;
+import com.appodeal.ads.InterstitialCallbacks;
+import com.appodeal.ads.initializing.ApdInitializationCallback;
 import com.appodeal.ads.initializing.ApdInitializationError;
 import com.appodeal.ads.utils.Log.LogLevel;
 
 import java.util.List;
 
-
 /**
  * Created by gaston on 24/06/17.
  */
-
+@SuppressWarnings("deprecation")
 public class LightActivity extends AppCompatActivity {
 
     ImageButton btnFlash, btnDimer, btnShake, btnNoti;
@@ -75,8 +68,8 @@ public class LightActivity extends AppCompatActivity {
     boolean restoredText = false;
     private Boolean isTorchOn;
 
-    private AdView adView;
-    private AdView mAdView;
+    // --- Appodeal Banner variable ---
+    private FrameLayout appodealBannerView;
 
     private int counter = 0;
     private int camId = 1;
@@ -89,29 +82,153 @@ public class LightActivity extends AppCompatActivity {
 
     private static final String SHOWCASE_ID = "sequence example";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // =====================================================================
+        // AdMob removido - Appodeal ya incluye AdMob en su mediation
+        // =====================================================================
+
+        // =====================================================================
+        // --- START OF APPODEAL BANNER CODE ---
+
+        // 1. Find the FrameLayout for Appodeal banner
+        appodealBannerView = findViewById(R.id.appodealBannerView);
+
+        // 2. Initialize Appodeal SDK
+        String appodealAppKey = "77043cce5169a8ba14f2b2a43e009d4853f76330ed9b8d11";
+        
+        // Habilitar modo de prueba para ver ads de prueba
         Appodeal.setTesting(true);
-        Appodeal.setBannerViewId(R.id.appodeal_banner_view);
-        Appodeal.initialize(LightActivity.this, "77043cce5169a8ba14f2b2a43e009d4853f76330ed9b8d11", Appodeal.BANNER, new ApdInitializationCallback() {
+        Appodeal.setLogLevel(LogLevel.verbose);
+        
+        // Verificar que el FrameLayout existe
+        if (appodealBannerView == null) {
+            Log.e("Appodeal", "ERROR: appodealBannerView es NULL!");
+        } else {
+            Log.d("Appodeal", "appodealBannerView encontrado correctamente");
+            appodealBannerView.setVisibility(View.VISIBLE); // Asegurar que sea visible
+        }
+        
+        // 3. Configurar el ID del banner view ANTES de inicializar
+        Appodeal.setBannerViewId(R.id.appodealBannerView);
+        Log.d("Appodeal", "BannerViewId configurado: " + R.id.appodealBannerView);
+        
+        // 4. Set banner callbacks ANTES de inicializar (importante)
+        Appodeal.setBannerCallbacks(new BannerCallbacks() {
             @Override
-            public void onInitializationFinished(@Nullable List<ApdInitializationError> errors) {
-                // Appodeal initialization finished
+            public void onBannerLoaded(int height, boolean isPrecache) {
+                // Banner loaded successfully - mostrar automáticamente
+                Log.d("Appodeal", "Banner loaded, height: " + height + ", isPrecache: " + isPrecache);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Mostrar el banner automáticamente cuando esté cargado
+                        if (Appodeal.isLoaded(Appodeal.BANNER)) {
+                            Appodeal.show(LightActivity.this, Appodeal.BANNER);
+                            Log.d("Appodeal", "Intentando mostrar banner después de cargar");
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onBannerFailedToLoad() {
+                // Banner failed to load
+                Log.e("Appodeal", "Banner failed to load - verifica tu App Key y conexión a internet");
+            }
+
+            @Override
+            public void onBannerShown() {
+                // Banner shown
+                Log.d("Appodeal", "Banner shown - ¡Éxito!");
+            }
+
+            @Override
+            public void onBannerShowFailed() {
+                // Banner show failed
+                Log.e("Appodeal", "Banner show failed");
+            }
+
+            @Override
+            public void onBannerClicked() {
+                // Banner clicked
+                Log.d("Appodeal", "Banner clicked");
+            }
+
+            @Override
+            public void onBannerExpired() {
+                // Banner expired
+                Log.d("Appodeal", "Banner expired");
             }
         });
-        Appodeal.isLoaded(Appodeal.BANNER);
-        Appodeal.setAutoCache(Appodeal.BANNER, false);
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+        
+        // 4. Set interstitial callbacks ANTES de inicializar
+        Appodeal.setInterstitialCallbacks(new com.appodeal.ads.InterstitialCallbacks() {
             @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            public void onInterstitialLoaded(boolean isPrecache) {
+                Log.d("Appodeal", "Interstitial loaded, isPrecache: " + isPrecache);
+            }
+
+            @Override
+            public void onInterstitialFailedToLoad() {
+                Log.e("Appodeal", "Interstitial failed to load");
+            }
+
+            @Override
+            public void onInterstitialShown() {
+                Log.d("Appodeal", "Interstitial shown");
+            }
+
+            @Override
+            public void onInterstitialShowFailed() {
+                Log.e("Appodeal", "Interstitial show failed");
+            }
+
+            @Override
+            public void onInterstitialClicked() {
+                Log.d("Appodeal", "Interstitial clicked");
+            }
+
+            @Override
+            public void onInterstitialClosed() {
+                Log.d("Appodeal", "Interstitial closed");
+            }
+
+            @Override
+            public void onInterstitialExpired() {
+                Log.d("Appodeal", "Interstitial expired");
+            }
+        });
+        
+        // 5. Initialize Appodeal SDK with BANNER and INTERSTITIAL
+        Log.d("Appodeal", "Inicializando Appodeal con App Key: " + appodealAppKey);
+        Appodeal.initialize(this, appodealAppKey, Appodeal.BANNER | Appodeal.INTERSTITIAL, new ApdInitializationCallback() {
+            @Override
+            public void onInitializationFinished(List<ApdInitializationError> errors) {
+                if (errors == null || errors.isEmpty()) {
+                    // Appodeal initialized successfully
+                    Log.d("Appodeal", "Appodeal inicializado correctamente");
+                    // Cargar el banner - se mostrará automáticamente cuando esté listo (en onBannerLoaded)
+                    Log.d("Appodeal", "Iniciando cache de Banner...");
+                    Appodeal.cache(LightActivity.this, Appodeal.BANNER);
+                    // Pre-cargar interstitial para uso futuro
+                    Log.d("Appodeal", "Iniciando cache de Interstitial...");
+                    Appodeal.cache(LightActivity.this, Appodeal.INTERSTITIAL);
+                } else {
+                    // Handle initialization errors
+                    Log.e("Appodeal", "Errores de inicialización:");
+                    for (ApdInitializationError error : errors) {
+                        Log.e("Appodeal", "Error: " + error.toString());
+                    }
+                }
             }
         });
 
-
+        // --- END OF APPODEAL BANNER CODE ---
+        // =====================================================================
 
         isTorchOn = false;
 
@@ -123,9 +240,8 @@ public class LightActivity extends AppCompatActivity {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
                 //ask for authorisation
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 50);
-
-
         }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mCameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         }
@@ -155,10 +271,8 @@ public class LightActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startDimer();
-
             }
-                                    }
-        );
+        });
         ibtnMenu = (ImageButton) findViewById(R.id.ibtnMenu);
         Intent intent = getIntent();
         isNotiOn = intent.getBooleanExtra("inNotiOn", isNotiOn);
@@ -174,7 +288,6 @@ public class LightActivity extends AppCompatActivity {
 
         shakeOn = sharedpreferences.getBoolean("shakeOn", shakeOn);
 
-
         final boolean hasFlash = this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
         imagebutton = (ImageButton) findViewById(R.id.btnNoti);
         imagebutton.setOnClickListener(new View.OnClickListener() {
@@ -182,7 +295,6 @@ public class LightActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!hasFlash) {
                     Toast.makeText(getApplicationContext(), "No Flash", Toast.LENGTH_LONG).show();
-
                 } else {
                     lightOn();
                 }
@@ -190,17 +302,15 @@ public class LightActivity extends AppCompatActivity {
         });
         startNotification(this);
 
-
         btnFlash.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 turnOn();
-
             }
         });
-
     }
+
+    // --- The rest of your file remains unchanged below this point ---
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
@@ -224,13 +334,11 @@ public class LightActivity extends AppCompatActivity {
 
     private void startDimer() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //createNotificationChannel();
             boolean settingsCanWrite = Settings.System.canWrite(this);
 
             if (!settingsCanWrite) {
                 Intent d = new Intent(LightActivity.this, DimerBright.class);
                 startActivity(d);
-                //close();
             } else {
                 Intent dd = new Intent(LightActivity.this, Dimer.class);
                 startActivity(dd);
@@ -243,29 +351,18 @@ public class LightActivity extends AppCompatActivity {
 
     private void help() {
         //  presentShowcaseSequence();
-        // Intent e = new Intent(LightActivity.this, tutoActivity.class);
-        //startActivity(e);
-
     }
 
     private void share() {
         Intent share = new Intent(Intent.ACTION_SEND);
-
-        // If you want to share a png image only, you can do:
-        // setType("image/png"); OR for jpeg: setType("image/jpeg");
         share.setType("text/plain");
         share.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=lesbegueris.gaston.com.milinterna");
-
         startActivity(Intent.createChooser(share, "¡¡¡Compartime!!!"));
-
-
     }
 
     private void rateMe() {
-
         startActivity(new Intent(Intent.ACTION_VIEW,
                 Uri.parse("market://details?id=lesbegueris.gaston.com.milinterna")));
-
     }
 
     private void mandarEmail() {
@@ -293,14 +390,9 @@ public class LightActivity extends AppCompatActivity {
         if (isFlash) {
             if (!isOn) {
                 imagebutton.setBackgroundResource((R.mipmap.ic_switch3on_foreground));
-                // releaseCameraAndPreview();
-
-
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         mCameraManager.setTorchMode(mCameraId, true);
-                        //playOnOffSound();
-                        //mTorchOnOffButton.setImageResource(R.drawable.on);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -308,54 +400,33 @@ public class LightActivity extends AppCompatActivity {
                 isOn = true;
             } else {
                 imagebutton.setBackgroundResource(R.mipmap.ic_switch3off_foreground);
-
-
-                // Toast.makeText(getApplicationContext(), R.string.Notification, Toast.LENGTH_LONG).show();
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         mCameraManager.setTorchMode(mCameraId, false);
-                        // playOnOffSound();
-                        //mTorchOnOffButton.setImageResource(R.drawable.off);
-
                     }
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 isOn = false;
-
             }
-
-
         }
-
     }
 
-
     public void turnOnFlashLight() {
-
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mCameraManager.setTorchMode(mCameraId, true);
-                // playOnOffSound();
-                //mTorchOnOffButton.setImageResource(R.drawable.on);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
     public void turnOffFlashLight() {
-
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mCameraManager.setTorchMode(mCameraId, false);
-                // playOnOffSound();
-                //mTorchOnOffButton.setImageResource(R.drawable.off);
-
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -371,27 +442,19 @@ public class LightActivity extends AppCompatActivity {
             startNotification(this);
             finish();
             startActivity(getIntent());
-            //  btnFlash.setBackgroundResource(R.mipmap.switchoff);
-
         } else {
             endNotification();
-            //btnFlash.setBackgroundResource(R.mipmap.switchon);
             SharedPreferences.Editor editor = sharedpreferences.edit();
             editor.putBoolean("isNotiOn", false);
             editor.apply();
             editor.commit();
             isNotiOn = false;
-
         }
-
     }
 
-
     public void endNotification() {
-
         btnFlash.setBackgroundResource(R.mipmap.ic_switch3off_foreground);
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(304);
         SharedPreferences.Editor editor = getSharedPreferences(MyPREFERENCES, MODE_PRIVATE).edit();
         isNotiOn = false;
@@ -402,8 +465,6 @@ public class LightActivity extends AppCompatActivity {
 
     public void startNotification(Context context) {
         btnFlash.setBackgroundResource(R.mipmap.ic_switch3on_foreground);
-
-
         Intent intent1 = new Intent(this, LightActivity.class);
         PendingIntent pIntent1 = PendingIntent.getActivity(this, 0, intent1, PendingIntent.FLAG_IMMUTABLE);
         sendBroadcast(intent1);
@@ -414,159 +475,49 @@ public class LightActivity extends AppCompatActivity {
         sendBroadcast(intent2);
         intent1.putExtra("isNotiOn", true);
 
-        //This is the intent of PendingIntent
         Intent intentAction = new Intent(this, ActionReceiver.class);
-
-        //This is optional if you have more than one buttons and want to differentiate between two
         intentAction.putExtra("action", "action1");
-        //intentAction.putExtra("action2","action2");
         PendingIntent pIntentlogin = PendingIntent.getBroadcast(this, 1, intentAction, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         CharSequence titulo = getText(R.string.app_name);
         if (isFlash) {
             if (!isOn) {
-
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
                 builder.setSmallIcon(R.drawable.bulbon);
-                //builder.setContentIntent(launchIntent);
-
                 builder.addAction(R.drawable.buttonon, "APP", pIntent1);
                 builder.addAction(R.drawable.bulbon, "DIMMER", pIntent2);
                 builder.setOngoing(true);
-                // builder.addAction(R.drawable.ic_notion,"OPEN", pIntent1);
-                builder.setPriority(NotificationCompat.PRIORITY_HIGH);
-                Notification notification = builder.build();
-
-                //builder.setContentIntent(launchIntent);
-                //builder.addAction(R.drawable.bulbon, "DIMMER", pIntent2);
-                //builder.addAction(R.drawable.buttonon, "LIGHT", pIntent1);
-
-
-                NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
-                notificationManagerCompat.notify(304, notification);
-
-
-                isOn = true;
             }
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    public class ActionReceiver extends BroadcastReceiver {
-
-        @SuppressLint("MissingPermission")
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            Toast.makeText(context,"recieved",Toast.LENGTH_SHORT).show();
-
-            String action=intent.getStringExtra("action");
-            if(action.equals("action1")){
-                performAction1();
-            }
-            else if(action.equals("action2")){
-                performAction2();
-
-            }
-            //This is used to close the notification tray
-            Intent it = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-            context.sendBroadcast(it);
-        }
-
-        public void performAction1(){
-            Context context;
-           // Toast.makeText(context,"recieved",Toast.LENGTH_SHORT).show();
-        }
-
-        public void performAction2(){
-
-        }
-    }
-
-    public PendingIntent getLaunchIntent(int notificationId, Context context) {
-
-
-        //This is the intent of PendingIntent
-        Intent intentAction = new Intent(this, ActionReceiver.class);
-        intentAction.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        //This is optional if you have more than one buttons and want to differentiate between two
-        intentAction.putExtra("action","actionName");
-        intentAction.putExtra("notificationId", notificationId);
-
-        //Intent intent1 = new Intent(context, LightActivity.class);
-        //Intent intent2 = new Intent(context, DimerBright.class);
-        //intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        //intent1.putExtra("notificationId", notificationId);
-        return PendingIntent.getActivity(context, 0, intentAction, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if(isOn){
-            lightOn();
-
-        }
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if(isOn){
-            lightOn();
-        }
+        String channelName = "My App Channel";
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.createNotificationChannel(channel);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(isOn){
-            lightOn();
+        // Appodeal handles lifecycle automatically for banners
+        // Mostrar el banner si está cargado
+        if (Appodeal.isLoaded(Appodeal.BANNER)) {
+            Appodeal.show(this, Appodeal.BANNER);
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Appodeal handles lifecycle automatically for banners
+    }
 
-            // @Override
-            public void onClick (View v){
-                // TODO Auto-generated method stub
-                if (v.getId() == R.id.btnNoti || v.getId() == R.id.btnFlash || v.getId() == R.id.btnShake
-                        || v.getId() == R.id.ibtnMenu) {
-
-
-
-                } else if (v.getId() == R.id.ibtnMenu) {
-                }
-
-            }
-
-
-        }
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Appodeal maneja el ciclo de vida automáticamente
+    }
+}

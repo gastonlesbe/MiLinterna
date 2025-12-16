@@ -22,6 +22,15 @@
         android:contentDescription="@string/todo"
         android:visibility="invisible" />
 
+    <!-- Appodeal Banner Ad - Movido arriba para mejor visibilidad -->
+    <FrameLayout
+        android:id="@+id/appodealBannerView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:background="#F0F0F0" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -189,13 +198,9 @@
             </LinearLayout>
         </LinearLayout>
 
-        <com.appodeal.ads.BannerView
-            android:id="@+id/appodeal_banner_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
 
     </LinearLayout>
+
 
 
 

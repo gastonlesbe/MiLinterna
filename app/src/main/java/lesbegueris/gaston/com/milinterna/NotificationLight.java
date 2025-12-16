@@ -20,7 +20,7 @@ import androidx.core.app.NotificationManagerCompat;
 /**
  * Created by gaston on 28/06/17.
  */
-
+@SuppressWarnings("deprecation")
 public class NotificationLight extends IntentService {
     Camera camera1;
     Camera.Parameters parameters1;
@@ -59,15 +59,15 @@ public class NotificationLight extends IntentService {
 
 
         Intent intent1 = new Intent(this, LightActivity.class);
-        PendingIntent pIntent1 = PendingIntent.getActivity(this,
-                (int) System.currentTimeMillis(), intent1, 0);
         intent1.putExtra("isNotiOn", true);
+        PendingIntent pIntent1 = PendingIntent.getActivity(this,
+                (int) System.currentTimeMillis(), intent1, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         sendBroadcast(intent1);
 
         Intent notificationIntent = new Intent(this, NotificationLight.class);
         PendingIntent pendingIntent = PendingIntent.getService(this, (int) System.currentTimeMillis(),
-                notificationIntent, 0);
+                notificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         CharSequence titulo = getText(R.string.app_name);
 
 
