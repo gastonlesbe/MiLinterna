@@ -2,20 +2,16 @@ apply plugin: 'com.android.application'
 
 
 android {
-    compileSdk 34
+    compileSdk 35
+    ndkVersion "26.1.10909125"
     defaultConfig {
         applicationId "lesbegueris.gaston.com.milinterna"
         minSdkVersion 21
         targetSdk 34
-        versionName '1.7.2'
+        versionName '1.7.3'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        versionCode 72
+        versionCode 73
         resourceConfigurations += ['en', 'es', 'pt', 'en_US', 'pt_BR', 'en_GB', 'es_US', 'es_419', '']
-        compileOptions {
-            sourceCompatibility JavaVersion.VERSION_1_8
-            targetCompatibility JavaVersion.VERSION_1_8
-        }
-
     }
 
     buildTypes {
@@ -24,16 +20,22 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
     productFlavors {
     }
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     lint {
         checkReleaseBuilds false
     }
-    buildToolsVersion '34.0.0'
+    buildToolsVersion '35.0.0'
     namespace 'lesbegueris.gaston.com.milinterna'
 
 
@@ -57,8 +59,11 @@ dependencies {
     implementation 'androidx.core:core:1.13.1'
     implementation 'androidx.test.ext:junit:1.2.1'
     implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.preference:preference:1.2.1'
 
     // Appodeal SDK (declared only once)
+    // IMPORTANTE: Esta versión tiene librerías nativas no alineadas a 16KB
+    // Contacta a Appodeal para obtener una versión compatible: support@appodeal.com
     implementation("com.appodeal.ads:sdk:3.3.2.0") {
         exclude group: "com.appodeal.ads.sdk.services", module: "adjust"
         exclude group: "com.appodeal.ads.sdk.services", module: "appsflyer"
