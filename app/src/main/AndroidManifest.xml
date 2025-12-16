@@ -21,9 +21,6 @@
     <uses-permission android:name="android.permission.INTERNET"
         android:required="false"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"
-        android:required="false"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"
         tools:node="remove" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
@@ -62,11 +59,13 @@
 
         <activity android:name=".Dimer"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:exported="false"/>
 
         <activity android:name=".DimerBright"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:exported="false"/>
 
 
 
