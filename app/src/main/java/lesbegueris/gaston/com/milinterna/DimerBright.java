@@ -29,7 +29,7 @@ public class DimerBright extends Activity {
         setContentView(R.layout.activity_dimer);
         //Toolbar toolbar = findViewById(R.id.toolbar);
         // setSupportActionBar(toolbar);
-        
+
         // Configurar callbacks de Appodeal Interstitial
         setupInterstitialCallbacks();
 
@@ -178,7 +178,7 @@ private void updateBackground()
             public void onInterstitialExpired() {
                 Log.d("DimerBright", "Appodeal Interstitial expired");
             }
-        });
+                });
     }
 
     private void close() {
