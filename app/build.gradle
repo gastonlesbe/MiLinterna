@@ -12,7 +12,7 @@ android {
     ndkVersion "26.1.10909125"
     defaultConfig {
         applicationId "lesbegueris.gaston.com.milinterna"
-        minSdkVersion 21
+        minSdkVersion 23  // Updated to support Appodeal SDK 3.8.0.0 (requires minSdk 23)
         targetSdk 34
         versionName '1.8.5'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -23,7 +23,7 @@ android {
     signingConfigs {
         release {
             if (keystorePropertiesFile.exists()) {
-                storeFile file(keystoreProperties['storeFile'])
+                storeFile rootProject.file(keystoreProperties['storeFile'])
                 storePassword keystoreProperties['storePassword']
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']
@@ -79,10 +79,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.preference:preference:1.2.1'
 
-    // Appodeal SDK (declared only once)
-    // IMPORTANTE: Esta versión tiene librerías nativas no alineadas a 16KB
-    // Contacta a Appodeal para obtener una versión compatible: support@appodeal.com
-    implementation("com.appodeal.ads:sdk:3.3.2.0") {
+    // Appodeal SDK (same version as Caretemplate/PetPal)
+    implementation("com.appodeal.ads:sdk:3.8.0.0") {
         exclude group: "com.appodeal.ads.sdk.services", module: "adjust"
         exclude group: "com.appodeal.ads.sdk.services", module: "appsflyer"
         exclude group: "com.appodeal.ads.sdk.services", module: "facebook_analytics"

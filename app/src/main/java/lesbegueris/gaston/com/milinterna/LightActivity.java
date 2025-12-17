@@ -25,7 +25,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -42,14 +41,8 @@ import static lesbegueris.gaston.com.milinterna.NotificationLight.CHANNEL_ID;
 // AdMob removido - Appodeal ya incluye AdMob en su mediation
 
 // Your other imports
-import com.appodeal.ads.Appodeal;
-import com.appodeal.ads.BannerCallbacks;
-import com.appodeal.ads.InterstitialCallbacks;
-import com.appodeal.ads.initializing.ApdInitializationCallback;
-import com.appodeal.ads.initializing.ApdInitializationError;
-import com.appodeal.ads.utils.Log.LogLevel;
+import lesbegueris.gaston.com.milinterna.util.AppodealHelper;
 
-import java.util.List;
 
 /**
  * Created by gaston on 24/06/17.
@@ -68,8 +61,6 @@ public class LightActivity extends AppCompatActivity {
     boolean restoredText = false;
     private Boolean isTorchOn;
 
-    // --- Appodeal Banner variable ---
-    private FrameLayout appodealBannerView;
 
     private int counter = 0;
     private int camId = 1;
@@ -92,142 +83,10 @@ public class LightActivity extends AppCompatActivity {
         // =====================================================================
 
         // =====================================================================
-        // --- START OF APPODEAL BANNER CODE ---
-
-        // 1. Find the FrameLayout for Appodeal banner
-        appodealBannerView = findViewById(R.id.appodealBannerView);
-
-        // 2. Initialize Appodeal SDK
-        String appodealAppKey = "77043cce5169a8ba14f2b2a43e009d4853f76330ed9b8d11";
-        
-        // Habilitar modo de prueba para ver ads de prueba
-        Appodeal.setTesting(true);
-        Appodeal.setLogLevel(LogLevel.verbose);
-        
-        // Verificar que el FrameLayout existe
-        if (appodealBannerView == null) {
-            Log.e("Appodeal", "ERROR: appodealBannerView es NULL!");
-        } else {
-            Log.d("Appodeal", "appodealBannerView encontrado correctamente");
-            appodealBannerView.setVisibility(View.VISIBLE); // Asegurar que sea visible
-        }
-        
-        // 3. Configurar el ID del banner view ANTES de inicializar
-        Appodeal.setBannerViewId(R.id.appodealBannerView);
-        Log.d("Appodeal", "BannerViewId configurado: " + R.id.appodealBannerView);
-        
-        // 4. Set banner callbacks ANTES de inicializar (importante)
-        Appodeal.setBannerCallbacks(new BannerCallbacks() {
-            @Override
-            public void onBannerLoaded(int height, boolean isPrecache) {
-                // Banner loaded successfully - mostrar automáticamente
-                Log.d("Appodeal", "Banner loaded, height: " + height + ", isPrecache: " + isPrecache);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Mostrar el banner automáticamente cuando esté cargado
-                        if (Appodeal.isLoaded(Appodeal.BANNER)) {
-                            Appodeal.show(LightActivity.this, Appodeal.BANNER);
-                            Log.d("Appodeal", "Intentando mostrar banner después de cargar");
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onBannerFailedToLoad() {
-                // Banner failed to load
-                Log.e("Appodeal", "Banner failed to load - verifica tu App Key y conexión a internet");
-            }
-
-            @Override
-            public void onBannerShown() {
-                // Banner shown
-                Log.d("Appodeal", "Banner shown - ¡Éxito!");
-            }
-
-            @Override
-            public void onBannerShowFailed() {
-                // Banner show failed
-                Log.e("Appodeal", "Banner show failed");
-            }
-
-            @Override
-            public void onBannerClicked() {
-                // Banner clicked
-                Log.d("Appodeal", "Banner clicked");
-            }
-
-            @Override
-            public void onBannerExpired() {
-                // Banner expired
-                Log.d("Appodeal", "Banner expired");
-            }
-        });
-        
-        // 4. Set interstitial callbacks ANTES de inicializar
-        Appodeal.setInterstitialCallbacks(new com.appodeal.ads.InterstitialCallbacks() {
-            @Override
-            public void onInterstitialLoaded(boolean isPrecache) {
-                Log.d("Appodeal", "Interstitial loaded, isPrecache: " + isPrecache);
-            }
-
-            @Override
-            public void onInterstitialFailedToLoad() {
-                Log.e("Appodeal", "Interstitial failed to load");
-            }
-
-            @Override
-            public void onInterstitialShown() {
-                Log.d("Appodeal", "Interstitial shown");
-            }
-
-            @Override
-            public void onInterstitialShowFailed() {
-                Log.e("Appodeal", "Interstitial show failed");
-            }
-
-            @Override
-            public void onInterstitialClicked() {
-                Log.d("Appodeal", "Interstitial clicked");
-            }
-
-            @Override
-            public void onInterstitialClosed() {
-                Log.d("Appodeal", "Interstitial closed");
-            }
-
-            @Override
-            public void onInterstitialExpired() {
-                Log.d("Appodeal", "Interstitial expired");
-            }
-        });
-        
-        // 5. Initialize Appodeal SDK with BANNER and INTERSTITIAL
-        Log.d("Appodeal", "Inicializando Appodeal con App Key: " + appodealAppKey);
-        Appodeal.initialize(this, appodealAppKey, Appodeal.BANNER | Appodeal.INTERSTITIAL, new ApdInitializationCallback() {
-            @Override
-            public void onInitializationFinished(List<ApdInitializationError> errors) {
-                if (errors == null || errors.isEmpty()) {
-                    // Appodeal initialized successfully
-                    Log.d("Appodeal", "Appodeal inicializado correctamente");
-                    // Cargar el banner - se mostrará automáticamente cuando esté listo (en onBannerLoaded)
-                    Log.d("Appodeal", "Iniciando cache de Banner...");
-                    Appodeal.cache(LightActivity.this, Appodeal.BANNER);
-                    // Pre-cargar interstitial para uso futuro
-                    Log.d("Appodeal", "Iniciando cache de Interstitial...");
-                    Appodeal.cache(LightActivity.this, Appodeal.INTERSTITIAL);
-                } else {
-                    // Handle initialization errors
-                    Log.e("Appodeal", "Errores de inicialización:");
-                    for (ApdInitializationError error : errors) {
-                        Log.e("Appodeal", "Error: " + error.toString());
-                    }
-                }
-            }
-        });
-
-        // --- END OF APPODEAL BANNER CODE ---
+        // --- APPODEAL INITIALIZATION (using AppodealHelper) ---
+        String appodealAppKey = getString(R.string.appodeal_app_key);
+        AppodealHelper.initialize(this, appodealAppKey);
+        AppodealHelper.showBanner(this, R.id.appodealBannerView);
         // =====================================================================
 
         isTorchOn = false;
@@ -502,22 +361,23 @@ public class LightActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Appodeal handles lifecycle automatically for banners
-        // Mostrar el banner si está cargado
-        if (Appodeal.isLoaded(Appodeal.BANNER)) {
-            Appodeal.show(this, Appodeal.BANNER);
-        }
+        // Show banner when activity resumes
+        String appodealAppKey = getString(R.string.appodeal_app_key);
+        AppodealHelper.initialize(this, appodealAppKey);
+        AppodealHelper.showBanner(this, R.id.appodealBannerView);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Appodeal handles lifecycle automatically for banners
+        // Hide banner when activity pauses
+        AppodealHelper.hideBanner(this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Appodeal maneja el ciclo de vida automáticamente
+        // Hide banner when activity is destroyed
+        AppodealHelper.hideBanner(this);
     }
 }

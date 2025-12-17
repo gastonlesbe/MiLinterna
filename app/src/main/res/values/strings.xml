@@ -22,5 +22,6 @@
     <string name="channel_description" translatable="false">Notification Channel</string>
     <string name="todo">TODO</string>
     <string name="HelpDimer">Para usar Dimer</string>
+    <string name="appodeal_app_key">77043cce5169a8ba14f2b2a43e009d4853f76330ed9b8d11</string>
 
 </resources>

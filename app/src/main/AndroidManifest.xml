@@ -44,6 +44,10 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-9841764898906750~2298659829" />
 
+        <!-- Appodeal App Key (string in res/values/strings.xml) -->
+        <meta-data
+            android:name="com.appodeal.application_key"
+            android:value="@string/appodeal_app_key" />
 
         <activity android:name=".LightActivity"
             android:configChanges="orientation"
