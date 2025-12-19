@@ -13,10 +13,10 @@ android {
     defaultConfig {
         applicationId "lesbegueris.gaston.com.milinterna"
         minSdkVersion 23  // Updated to support Appodeal SDK 3.8.0.0 (requires minSdk 23)
-        targetSdk 34
-        versionName '1.8.5'
+        targetSdk 35  // Updated to meet Google Play requirements (Android 15)
+        versionName '1.8.6'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        versionCode 85
+        versionCode 86
         resourceConfigurations += ['en', 'es', 'pt', 'en_US', 'pt_BR', 'en_GB', 'es_US', 'es_419', '']
     }
 
