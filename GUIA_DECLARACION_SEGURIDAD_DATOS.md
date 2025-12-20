@@ -3,7 +3,7 @@
 ## Problema Identificado
 Google Play detectó que tu aplicación está transmitiendo **"Dispositivo u otros IDs"** (Device or other IDs) fuera del dispositivo, pero esto no está declarado en la sección de Seguridad de los datos.
 
-Esto ocurre porque tu aplicación usa **AdMob** y **Appodeal**, que recopilan el **Advertising ID** de Android.
+Esto ocurre porque tu aplicación usa **Appodeal** (una plataforma de mediación de anuncios), que recopila el **Advertising ID** de Android. Appodeal utiliza múltiples redes publicitarias, incluyendo Google AdMob, para mostrar anuncios.
 
 ## Solución: Actualizar la Declaración de Seguridad de Datos
 
@@ -31,7 +31,7 @@ Necesitas declarar los siguientes datos que tu aplicación recopila y comparte:
 - ✅ **Análisis**
 
 **¿Cómo se usan estos datos?**
-- ✅ **Se comparten con terceros** (AdMob y Appodeal)
+- ✅ **Se comparten con terceros** (Appodeal y sus redes publicitarias asociadas, incluyendo Google AdMob)
 
 **¿Se encriptan estos datos en tránsito?**
 - ✅ **Sí** (los datos se transmiten por HTTPS)
@@ -58,7 +58,7 @@ También deberías declarar:
 - ✅ **Análisis**
 
 **¿Cómo se usan estos datos?**
-- ✅ **Se comparten con terceros** (AdMob y Appodeal)
+- ✅ **Se comparten con terceros** (Appodeal y sus redes publicitarias asociadas, incluyendo Google AdMob)
 
 ### Paso 4: Declarar Datos de Interacción con Anuncios (Opcional)
 
@@ -74,14 +74,13 @@ También deberías declarar:
 - ✅ **Análisis**
 
 **¿Cómo se usan estos datos?**
-- ✅ **Se comparten con terceros** (AdMob y Appodeal)
+- ✅ **Se comparten con terceros** (Appodeal y sus redes publicitarias asociadas, incluyendo Google AdMob)
 
 ### Paso 5: Declarar Servicios de Terceros
 
 En la sección de **"Servicios de terceros"** o **"Compartir datos"**, declara:
 
-- **Google AdMob** - Para mostrar anuncios
-- **Appodeal** - Para mostrar anuncios (mediación de anuncios)
+- **Appodeal** - Plataforma de mediación de anuncios (que utiliza múltiples redes publicitarias, incluyendo Google AdMob)
 
 ### Paso 6: Verificar Consistencia
 
@@ -103,9 +102,9 @@ Asegúrate de que la declaración coincida con tu política de privacidad:
 
 | Tipo de Dato | Recopilado | Compartido | Propósito |
 |--------------|------------|------------|-----------|
-| **ID de publicidad (Advertising ID)** | ✅ Sí | ✅ Sí (AdMob, Appodeal) | Publicidad, Análisis |
-| **Información del dispositivo** | ✅ Sí | ✅ Sí (AdMob, Appodeal) | Publicidad, Análisis |
-| **Datos de interacción con anuncios** | ✅ Sí | ✅ Sí (AdMob, Appodeal) | Publicidad, Análisis |
+| **ID de publicidad (Advertising ID)** | ✅ Sí | ✅ Sí (Appodeal y redes asociadas) | Publicidad, Análisis |
+| **Información del dispositivo** | ✅ Sí | ✅ Sí (Appodeal y redes asociadas) | Publicidad, Análisis |
+| **Datos de interacción con anuncios** | ✅ Sí | ✅ Sí (Appodeal y redes asociadas) | Publicidad, Análisis |
 
 ## Notas Importantes:
 
@@ -116,6 +115,10 @@ Asegúrate de que la declaración coincida con tu política de privacidad:
 3. **Consistencia**: La declaración debe coincidir con tu política de privacidad.
 
 4. **Actualización**: Si cambias los SDKs de publicidad en el futuro, actualiza esta declaración.
+
+## Nota Técnica
+
+Tu aplicación utiliza **solo Appodeal** como SDK de publicidad. Appodeal es una plataforma de mediación que internamente utiliza múltiples redes publicitarias (incluyendo Google AdMob) para mostrar anuncios. Por lo tanto, aunque técnicamente los datos se comparten con AdMob, esto ocurre a través de Appodeal, no directamente. En la declaración de seguridad de datos, puedes mencionar principalmente Appodeal como el servicio principal, y opcionalmente mencionar que Appodeal utiliza redes asociadas como Google AdMob.
 
 ## Si tienes dudas:
 
