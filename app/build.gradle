@@ -14,9 +14,9 @@ android {
         applicationId "lesbegueris.gaston.com.milinterna"
         minSdkVersion 23  // Updated to support Appodeal SDK 3.8.0.0 (requires minSdk 23)
         targetSdk 35  // Updated to meet Google Play requirements (Android 15)
-        versionName '1.8.6'
+        versionName '1.8.8'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        versionCode 86
+        versionCode 88
         resourceConfigurations += ['en', 'es', 'pt', 'en_US', 'pt_BR', 'en_GB', 'es_US', 'es_419', '']
     }
 
@@ -65,6 +65,14 @@ allprojects {
         }
     }
 }
+
+// Global exclusions to completely remove MyTracker SDK from all configurations
+// This ensures MyTracker is excluded from all transitive dependencies
+configurations.all {
+    exclude group: 'com.my.tracker', module: 'mytracker-sdk'
+    exclude group: 'com.my.tracker'
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation('androidx.test.espresso:espresso-core:3.1.0', {
@@ -80,12 +88,15 @@ dependencies {
     implementation 'androidx.preference:preference:1.2.1'
 
     // Appodeal SDK (same version as Caretemplate/PetPal)
+    // Excluding MyTarget network and MyTracker SDK to fix Google Play policy violation
     implementation("com.appodeal.ads:sdk:3.8.0.0") {
         exclude group: "com.appodeal.ads.sdk.services", module: "adjust"
         exclude group: "com.appodeal.ads.sdk.services", module: "appsflyer"
         exclude group: "com.appodeal.ads.sdk.services", module: "facebook_analytics"
         exclude group: "com.appodeal.ads.sdk.services", module: "firebase"
         exclude group: "com.appodeal.ads.sdk.services", module: "sentry_analytics"
+        exclude group: "com.appodeal.ads.sdk.networks", module: "my_target"
+        exclude group: "com.my.tracker", module: "mytracker-sdk"
     }
 }
 
