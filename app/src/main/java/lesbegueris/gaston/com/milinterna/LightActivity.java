@@ -348,18 +348,23 @@ public class LightActivity extends AppCompatActivity {
             createNotificationChannel();
         }
         
+        // Verificar permisos de notificación (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) 
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Solicitar permiso
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 100);
+                Log.w("LightActivity", "Notification permission not granted, requesting...");
+                return; // Salir y esperar a que se conceda el permiso
+            }
+        }
+        
         // Crear y mostrar la notificación
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
         builder.setContentTitle(titulo);
         builder.setContentText("Linterna activa - Toca para controlar");
-        // Usar icono de la app para la notificación (Android requiere iconos monocromáticos)
-        // Si ic_bulbon no es monocromático, usar el icono de la app
-        try {
-            builder.setSmallIcon(R.mipmap.ic_bulbon);
-        } catch (Exception e) {
-            // Si falla, usar el icono de la app
-            builder.setSmallIcon(android.R.drawable.ic_dialog_info);
-        }
+        // Usar icono de la app - Android requiere iconos monocromáticos para notificaciones
+        builder.setSmallIcon(R.drawable.bulbon); // Usar drawable en lugar de mipmap
         builder.setContentIntent(pIntent1);
         builder.addAction(R.drawable.buttonon, "APP", pIntent1);
         builder.addAction(R.drawable.buttonon, "DIMMER", pIntent2);
@@ -367,18 +372,31 @@ public class LightActivity extends AppCompatActivity {
         builder.setPriority(NotificationCompat.PRIORITY_HIGH);
         builder.setAutoCancel(false);
         builder.setShowWhen(false);
+        builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         
         Notification notification = builder.build();
         
         // Mostrar la notificación
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         try {
-            notificationManager.notify(304, notification);
+            if (notificationManager.areNotificationsEnabled()) {
+                notificationManager.notify(304, notification);
+                Log.d("LightActivity", "Notification shown successfully");
+            } else {
+                Log.w("LightActivity", "Notifications are disabled by user");
+                // Abrir configuración de notificaciones
+                Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                startActivity(intent);
+            }
         } catch (SecurityException e) {
+            Log.e("LightActivity", "SecurityException showing notification", e);
             // Si no hay permiso de notificación, solicitarlo
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 100);
             }
+        } catch (Exception e) {
+            Log.e("LightActivity", "Error showing notification", e);
         }
     }
 

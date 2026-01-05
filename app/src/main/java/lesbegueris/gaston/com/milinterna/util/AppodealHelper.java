@@ -65,8 +65,22 @@ public class AppodealHelper {
                 @Override
                 public void onBannerLoaded(int height, boolean isPrecache) {
                     Log.d(TAG, "Banner loaded, height: " + height);
-                    // Intentar mostrar el banner cuando esté cargado
-                    showBannerWhenReady(activity, containerId);
+                    // Cuando el banner se carga, agregarlo al contenedor
+                    activity.runOnUiThread(() -> {
+                        try {
+                            ViewGroup container = activity.findViewById(containerId);
+                            if (container != null) {
+                                removeBanner(container);
+                                BannerView bannerView = Appodeal.getBannerView(activity);
+                                if (bannerView != null) {
+                                    container.addView(bannerView);
+                                    Log.d(TAG, "Banner added to container");
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error adding banner to container", e);
+                        }
+                    });
                 }
 
                 @Override
@@ -95,52 +109,32 @@ public class AppodealHelper {
                 }
             });
 
-            // Intentar mostrar el banner inmediatamente
-            showBannerWhenReady(activity, containerId);
+            // Mostrar el banner - Appodeal manejará la carga automáticamente
+            Appodeal.show(activity, Appodeal.BANNER, containerId);
+            Log.d(TAG, "Banner show requested");
             
-            // Si no está listo, intentar de nuevo después de un breve delay
+            // También intentar obtener el banner view si ya está disponible
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    showBannerWhenReady(activity, containerId);
+                    try {
+                        ViewGroup container = activity.findViewById(containerId);
+                        if (container != null && Appodeal.isLoaded(Appodeal.BANNER)) {
+                            removeBanner(container);
+                            BannerView bannerView = Appodeal.getBannerView(activity);
+                            if (bannerView != null && bannerView.getParent() == null) {
+                                container.addView(bannerView);
+                                Log.d(TAG, "Banner added to container (delayed)");
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error in delayed banner add", e);
+                    }
                 }
-            }, 1000);
+            }, 2000);
             
         } catch (Exception e) {
             Log.e(TAG, "Error showing banner", e);
-        }
-    }
-    
-    /**
-     * Helper method to show banner when ready
-     */
-    private static void showBannerWhenReady(Activity activity, int containerId) {
-        try {
-            ViewGroup container = activity.findViewById(containerId);
-            if (container == null) {
-                return;
-            }
-
-            // Verificar si el banner ya está cargado
-            if (Appodeal.isLoaded(Appodeal.BANNER)) {
-                // Obtener el banner view
-                BannerView bannerView = Appodeal.getBannerView(activity);
-                if (bannerView != null) {
-                    // Remover banner existente antes de agregar uno nuevo
-                    removeBanner(container);
-                    container.addView(bannerView);
-                    Appodeal.show(activity, Appodeal.BANNER);
-                    Log.d(TAG, "Banner shown successfully");
-                } else {
-                    Log.w(TAG, "Banner view is null, trying to show directly");
-                    // Intentar mostrar directamente
-                    Appodeal.show(activity, Appodeal.BANNER);
-                }
-            } else {
-                Log.d(TAG, "Banner not loaded yet, will retry when loaded");
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error in showBannerWhenReady", e);
         }
     }
 
