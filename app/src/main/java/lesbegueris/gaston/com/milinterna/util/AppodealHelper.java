@@ -110,7 +110,7 @@ public class AppodealHelper {
             });
 
             // Mostrar el banner - Appodeal manejará la carga automáticamente
-            Appodeal.show(activity, Appodeal.BANNER, containerId);
+            Appodeal.show(activity, Appodeal.BANNER);
             Log.d(TAG, "Banner show requested");
             
             // También intentar obtener el banner view si ya está disponible
