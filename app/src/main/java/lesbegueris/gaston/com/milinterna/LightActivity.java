@@ -140,15 +140,18 @@ public class LightActivity extends AppCompatActivity {
         });
         ibtnMenu = (ImageButton) findViewById(R.id.ibtnMenu);
         Intent intent = getIntent();
-        isNotiOn = intent.getBooleanExtra("inNotiOn", isNotiOn);
+        isNotiOn = intent.getBooleanExtra("inNotiOn", false); // Por defecto false
         btnFlash = (ImageButton) findViewById((R.id.btnFlash));
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
-        isNotiOn = sharedpreferences.getBoolean("isNotiOn", isNotiOn);
+        // Leer el estado de la notificación (por defecto false - OFF)
+        isNotiOn = sharedpreferences.getBoolean("isNotiOn", false);
         if (!isNotiOn) {
             btnFlash.setBackgroundResource(R.mipmap.ic_switch3off_foreground);
         } else {
             btnFlash.setBackgroundResource(R.mipmap.ic_switch3on_foreground);
+            // Solo iniciar notificación si está activada
+            startNotification(this);
         }
 
         shakeOn = sharedpreferences.getBoolean("shakeOn", shakeOn);
@@ -165,7 +168,7 @@ public class LightActivity extends AppCompatActivity {
                 }
             }
         });
-        startNotification(this);
+        // Removido: startNotification(this) - solo se llama si isNotiOn es true
 
         btnFlash.setOnClickListener(new View.OnClickListener() {
             @Override
