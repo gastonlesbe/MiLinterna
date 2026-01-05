@@ -325,37 +325,70 @@ public class LightActivity extends AppCompatActivity {
     public void startNotification(Context context) {
         btnFlash.setBackgroundResource(R.mipmap.ic_switch3on_foreground);
         Intent intent1 = new Intent(this, LightActivity.class);
-        PendingIntent pIntent1 = PendingIntent.getActivity(this, 0, intent1, PendingIntent.FLAG_IMMUTABLE);
-        sendBroadcast(intent1);
         intent1.putExtra("isNotiOn", true);
+        PendingIntent pIntent1 = PendingIntent.getActivity(this, 0, intent1, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent intent2 = new Intent(this, DimerBright.class);
-        PendingIntent pIntent2 = PendingIntent.getActivity(this, 0, intent2, PendingIntent.FLAG_IMMUTABLE);
-        sendBroadcast(intent2);
-        intent1.putExtra("isNotiOn", true);
+        PendingIntent pIntent2 = PendingIntent.getActivity(this, 0, intent2, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent intentAction = new Intent(this, ActionReceiver.class);
         intentAction.putExtra("action", "action1");
         PendingIntent pIntentlogin = PendingIntent.getBroadcast(this, 1, intentAction, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         CharSequence titulo = getText(R.string.app_name);
-        if (isFlash) {
-            if (!isOn) {
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
-                builder.setSmallIcon(R.drawable.bulbon);
-                builder.addAction(R.drawable.buttonon, "APP", pIntent1);
-                builder.addAction(R.drawable.bulbon, "DIMMER", pIntent2);
-                builder.setOngoing(true);
+        
+        // Asegurar que el canal de notificación existe (para Android O+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
+        }
+        
+        // Crear y mostrar la notificación
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
+        builder.setContentTitle(titulo);
+        builder.setContentText("Linterna activa - Toca para controlar");
+        // Usar icono de la app para la notificación (Android requiere iconos monocromáticos)
+        // Si ic_bulbon no es monocromático, usar el icono de la app
+        try {
+            builder.setSmallIcon(R.mipmap.ic_bulbon);
+        } catch (Exception e) {
+            // Si falla, usar el icono de la app
+            builder.setSmallIcon(android.R.drawable.ic_dialog_info);
+        }
+        builder.setContentIntent(pIntent1);
+        builder.addAction(R.drawable.buttonon, "APP", pIntent1);
+        builder.addAction(R.drawable.buttonon, "DIMMER", pIntent2);
+        builder.setOngoing(true);
+        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        builder.setAutoCancel(false);
+        builder.setShowWhen(false);
+        
+        Notification notification = builder.build();
+        
+        // Mostrar la notificación
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        try {
+            notificationManager.notify(304, notification);
+        } catch (SecurityException e) {
+            // Si no hay permiso de notificación, solicitarlo
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 100);
             }
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotificationChannel() {
-        String channelName = "My App Channel";
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+        String channelName = getString(R.string.channel_name);
+        String channelDescription = getString(R.string.channel_description);
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_HIGH);
+        channel.setDescription(channelDescription);
+        channel.enableLights(true);
+        channel.enableVibration(false);
+        channel.setShowBadge(true);
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.createNotificationChannel(channel);
+        if (manager != null) {
+            manager.createNotificationChannel(channel);
+        }
     }
 
     @Override

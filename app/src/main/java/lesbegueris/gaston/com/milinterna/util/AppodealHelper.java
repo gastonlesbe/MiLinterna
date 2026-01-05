@@ -1,10 +1,13 @@
 package lesbegueris.gaston.com.milinterna.util;
 
 import android.app.Activity;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.appodeal.ads.Appodeal;
+import com.appodeal.ads.BannerCallbacks;
 import com.appodeal.ads.BannerView;
 import com.appodeal.ads.InterstitialCallbacks;
 
@@ -57,17 +60,87 @@ public class AppodealHelper {
             // Remove any existing banner
             removeBanner(container);
 
-            // Create and add Appodeal banner
-            BannerView bannerView = Appodeal.getBannerView(activity);
-            if (bannerView != null) {
-                container.addView(bannerView);
-                Appodeal.show(activity, Appodeal.BANNER);
-                Log.d(TAG, "Banner shown successfully");
-            } else {
-                Log.w(TAG, "Banner view is null");
-            }
+            // Configurar callbacks para saber cuando el banner está listo
+            Appodeal.setBannerCallbacks(new BannerCallbacks() {
+                @Override
+                public void onBannerLoaded(int height, boolean isPrecache) {
+                    Log.d(TAG, "Banner loaded, height: " + height);
+                    // Intentar mostrar el banner cuando esté cargado
+                    showBannerWhenReady(activity, containerId);
+                }
+
+                @Override
+                public void onBannerFailedToLoad() {
+                    Log.w(TAG, "Banner failed to load");
+                }
+
+                @Override
+                public void onBannerShown() {
+                    Log.d(TAG, "Banner shown");
+                }
+
+                @Override
+                public void onBannerShowFailed() {
+                    Log.w(TAG, "Banner show failed");
+                }
+
+                @Override
+                public void onBannerClicked() {
+                    Log.d(TAG, "Banner clicked");
+                }
+
+                @Override
+                public void onBannerExpired() {
+                    Log.d(TAG, "Banner expired");
+                }
+            });
+
+            // Intentar mostrar el banner inmediatamente
+            showBannerWhenReady(activity, containerId);
+            
+            // Si no está listo, intentar de nuevo después de un breve delay
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    showBannerWhenReady(activity, containerId);
+                }
+            }, 1000);
+            
         } catch (Exception e) {
             Log.e(TAG, "Error showing banner", e);
+        }
+    }
+    
+    /**
+     * Helper method to show banner when ready
+     */
+    private static void showBannerWhenReady(Activity activity, int containerId) {
+        try {
+            ViewGroup container = activity.findViewById(containerId);
+            if (container == null) {
+                return;
+            }
+
+            // Verificar si el banner ya está cargado
+            if (Appodeal.isLoaded(Appodeal.BANNER)) {
+                // Obtener el banner view
+                BannerView bannerView = Appodeal.getBannerView(activity);
+                if (bannerView != null) {
+                    // Remover banner existente antes de agregar uno nuevo
+                    removeBanner(container);
+                    container.addView(bannerView);
+                    Appodeal.show(activity, Appodeal.BANNER);
+                    Log.d(TAG, "Banner shown successfully");
+                } else {
+                    Log.w(TAG, "Banner view is null, trying to show directly");
+                    // Intentar mostrar directamente
+                    Appodeal.show(activity, Appodeal.BANNER);
+                }
+            } else {
+                Log.d(TAG, "Banner not loaded yet, will retry when loaded");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error in showBannerWhenReady", e);
         }
     }
 
