@@ -88,9 +88,9 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.preference:preference:1.2.1'
 
-    // Appodeal SDK (same version as Caretemplate/PetPal)
+    // Appodeal SDK - Updated to 3.12.0.0 (latest version)
     // Excluding MyTarget network and MyTracker SDK to fix Google Play policy violation
-    implementation("com.appodeal.ads:sdk:3.8.0.0") {
+    implementation("com.appodeal.ads:sdk:3.12.0.0") {
         exclude group: "com.appodeal.ads.sdk.services", module: "adjust"
         exclude group: "com.appodeal.ads.sdk.services", module: "appsflyer"
         exclude group: "com.appodeal.ads.sdk.services", module: "facebook_analytics"
