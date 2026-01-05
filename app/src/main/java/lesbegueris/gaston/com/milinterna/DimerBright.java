@@ -9,8 +9,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
-import com.appodeal.ads.Appodeal;
-import com.appodeal.ads.InterstitialCallbacks;
+import lesbegueris.gaston.com.milinterna.util.AdMobHelper;
 
 
 public class DimerBright extends Activity {
@@ -30,8 +29,7 @@ public class DimerBright extends Activity {
         //Toolbar toolbar = findViewById(R.id.toolbar);
         // setSupportActionBar(toolbar);
 
-        // Configurar callbacks de Appodeal Interstitial
-        setupInterstitialCallbacks();
+        // AdMob interstitials se manejan en AdMobHelper (no necesita setup aquí)
 
         btnClose = (ImageButton) findViewById(R.id.btnClose);
         btnClose.setOnClickListener(new View.OnClickListener() {
@@ -138,57 +136,17 @@ private void updateBackground()
                 });
     }
 
-    private void setupInterstitialCallbacks() {
-        Appodeal.setInterstitialCallbacks(new InterstitialCallbacks() {
-            @Override
-            public void onInterstitialLoaded(boolean isPrecache) {
-                Log.d("DimerBright", "Appodeal Interstitial loaded");
-            }
+    // Intersticiales ahora usan AdMob (manejado en AdMobHelper)
 
+    private void close() {
+        // Mostrar el interstitial ad de AdMob (menos intrusivo)
+        AdMobHelper.showInterstitial(this, new Runnable() {
             @Override
-            public void onInterstitialFailedToLoad() {
-                Log.e("DimerBright", "Appodeal Interstitial failed to load");
-            }
-
-            @Override
-            public void onInterstitialShown() {
-                Log.d("DimerBright", "Appodeal Interstitial shown");
-            }
-
-            @Override
-            public void onInterstitialShowFailed() {
-                Log.e("DimerBright", "Appodeal Interstitial show failed");
-                // Si falla al mostrar, cerrar directamente
-                closeDimer();
-            }
-
-            @Override
-            public void onInterstitialClicked() {
-                Log.d("DimerBright", "Appodeal Interstitial clicked");
-            }
-
-            @Override
-            public void onInterstitialClosed() {
-                Log.d("DimerBright", "Appodeal Interstitial closed");
+            public void run() {
                 // Ad cerrado, ahora sí cerramos el Dimer
                 closeDimer();
             }
-
-            @Override
-            public void onInterstitialExpired() {
-                Log.d("DimerBright", "Appodeal Interstitial expired");
-            }
-                });
-    }
-
-    private void close() {
-        // Mostrar el interstitial ad de Appodeal si está cargado
-        if (Appodeal.isLoaded(Appodeal.INTERSTITIAL)) {
-            Appodeal.show(this, Appodeal.INTERSTITIAL);
-        } else {
-            // Si no hay ad cargado, cerrar directamente
-            closeDimer();
-        }
+        });
     }
     
     private void closeDimer() {

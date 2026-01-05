@@ -30,10 +30,10 @@ public class AppodealHelper {
         }
 
         try {
-            // Initialize Appodeal with BANNER and INTERSTITIAL ad types
-            Appodeal.initialize(activity, appKey, Appodeal.BANNER | Appodeal.INTERSTITIAL);
+            // Initialize Appodeal with BANNER only (interstitials now use AdMob)
+            Appodeal.initialize(activity, appKey, Appodeal.BANNER);
             isInitialized = true;
-            Log.d(TAG, "Appodeal initialized successfully");
+            Log.d(TAG, "Appodeal initialized successfully (BANNER only)");
         } catch (Exception e) {
             Log.e(TAG, "Error initializing Appodeal", e);
         }

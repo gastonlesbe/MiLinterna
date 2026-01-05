@@ -42,6 +42,7 @@ import static lesbegueris.gaston.com.milinterna.NotificationLight.CHANNEL_ID;
 
 // Your other imports
 import lesbegueris.gaston.com.milinterna.util.AppodealHelper;
+import lesbegueris.gaston.com.milinterna.util.AdMobHelper;
 
 
 /**
@@ -87,6 +88,11 @@ public class LightActivity extends AppCompatActivity {
         String appodealAppKey = getString(R.string.appodeal_app_key);
         AppodealHelper.initialize(this, appodealAppKey);
         AppodealHelper.showBanner(this, R.id.appodealBannerView);
+        // =====================================================================
+        
+        // =====================================================================
+        // --- ADMOB INITIALIZATION (for interstitials) ---
+        AdMobHelper.initialize(this);
         // =====================================================================
 
         isTorchOn = false;
