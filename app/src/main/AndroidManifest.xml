@@ -40,10 +40,11 @@
         android:networkSecurityConfig="@xml/network_security_config">
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
-        <!-- AdMob APPLICATION_ID removido - Appodeal ya incluye AdMob en su mediación -->
-        <!-- <meta-data
+        <!-- AdMob APPLICATION_ID requerido porque Appodeal usa AdMob internamente -->
+        <!-- Aunque no usamos AdMob directamente, Appodeal lo requiere para funcionar -->
+        <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-9841764898906750~2298659829" /> -->
+            android:value="ca-app-pub-9841764898906750~2298659829" />
 
         <!-- Appodeal App Key (string in res/values/strings.xml) -->
         <meta-data
