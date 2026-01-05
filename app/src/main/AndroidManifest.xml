@@ -34,9 +34,7 @@
         android:roundIcon="@mipmap/launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="android:appComponentFactory"
         tools:ignore="ExtraText,GoogleAppIndexingWarning"
-        android:appComponentFactory="whateverString"
         android:networkSecurityConfig="@xml/network_security_config">
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
