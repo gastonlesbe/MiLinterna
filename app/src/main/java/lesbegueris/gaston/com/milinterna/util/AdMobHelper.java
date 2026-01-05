@@ -20,9 +20,7 @@ public class AdMobHelper {
     private static boolean isInitialized = false;
     
     // AdMob Interstitial Ad Unit ID
-    // ID de prueba de AdMob (funciona en desarrollo, muestra anuncios de prueba)
-    // Para producción, reemplaza con tu ID real de intersticial desde AdMob Console
-    private static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712"; // ID de prueba de Google
+    private static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-9841764898906750/8552541624";
     
     /**
      * Initialize AdMob SDK
