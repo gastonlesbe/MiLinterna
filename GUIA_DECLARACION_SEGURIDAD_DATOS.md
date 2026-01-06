@@ -128,3 +128,5 @@ Tu aplicación utiliza **solo Appodeal** como SDK de publicidad. Appodeal es una
 ## Después de actualizar:
 
 Una vez que actualices la declaración y Google la apruebe, el problema de "Invalid Data safety declaration" debería resolverse.
+
+
