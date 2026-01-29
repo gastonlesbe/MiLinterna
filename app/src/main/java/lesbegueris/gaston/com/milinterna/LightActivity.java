@@ -27,6 +27,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
+import android.widget.TextView;
+import androidx.appcompat.app.AlertDialog;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -37,8 +39,6 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
 import static lesbegueris.gaston.com.milinterna.NotificationLight.CHANNEL_ID;
-
-// AdMob removido - Appodeal ya incluye AdMob en su mediation
 
 // Your other imports
 import lesbegueris.gaston.com.milinterna.util.AppodealHelper;
@@ -84,15 +84,21 @@ public class LightActivity extends AppCompatActivity {
         // =====================================================================
 
         // =====================================================================
-        // --- APPODEAL INITIALIZATION (using AppodealHelper) ---
-        String appodealAppKey = getString(R.string.appodeal_app_key);
-        AppodealHelper.initialize(this, appodealAppKey);
-        AppodealHelper.showBanner(this, R.id.appodealBannerView);
+        // --- ADMOB INITIALIZATION FIRST (for interstitials and startup ad) ---
+        AdMobHelper.initialize(this);
         // =====================================================================
         
         // =====================================================================
-        // --- ADMOB INITIALIZATION (for interstitials) ---
-        AdMobHelper.initialize(this);
+        // --- APPODEAL INITIALIZATION (for banners) - AFTER AdMob ---
+        String appodealAppKey = getString(R.string.appodeal_app_key);
+        AppodealHelper.initialize(this, appodealAppKey);
+        // Delay banner to ensure AdMob initializes first
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                AppodealHelper.showBanner(LightActivity.this, R.id.appodealBannerView);
+            }
+        }, 500);
         // =====================================================================
 
         isTorchOn = false;
@@ -122,14 +128,33 @@ public class LightActivity extends AppCompatActivity {
         isFlash = true;
 
         SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
+        // TEMPORAL: Para testing, puedes cambiar esto a true para forzar el primer run
+        // boolean forceFirstRun = true; // Descomenta esta línea para forzar el anuncio de inicio
         boolean isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true);
+        Log.d("LightActivity", "isFirstRun: " + isFirstRun);
         if (isFirstRun) {
+            Log.d("LightActivity", "First run detected! Setting up welcome ad...");
             // Code to run once
             SharedPreferences.Editor editor = wmbPreference.edit();
             editor.putBoolean("FIRSTRUN", false);
             editor.commit();
-            //  presentShowcaseSequence();
-
+            
+            // Inicializar AdMob primero y luego cargar el anuncio de inicio
+            Log.d("LightActivity", "Initializing AdMob for startup ad...");
+            AdMobHelper.initialize(this);
+            // Esperar un poco para que AdMob se inicialice antes de cargar el anuncio
+            new android.os.Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("LightActivity", "Loading startup interstitial ad...");
+                    AdMobHelper.loadStartupInterstitial(LightActivity.this);
+                    // Mostrar diálogo de agradecimiento y luego el anuncio
+                    Log.d("LightActivity", "Showing welcome dialog...");
+                    showWelcomeDialog();
+                }
+            }, 2000); // Aumentado a 2 segundos para dar más tiempo a AdMob
+        } else {
+            Log.d("LightActivity", "Not first run, skipping welcome ad");
         }
         btnDimer = (ImageButton) findViewById(R.id.btnDimer);
         btnDimer.setOnClickListener(new View.OnClickListener() {
@@ -182,7 +207,57 @@ public class LightActivity extends AppCompatActivity {
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
+        MenuItem versionItem = menu.findItem(R.id.version);
+        if (versionItem != null) {
+            try {
+                versionItem.setTitle("v" + getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+            } catch (PackageManager.NameNotFoundException e) {
+                versionItem.setTitle("v1.9.2");
+            }
+            versionItem.setEnabled(false);
+        }
         return true;
+    }
+    
+    /**
+     * Show welcome dialog on first run, then show startup ad
+     */
+    private void showWelcomeDialog() {
+        Log.d("LightActivity", "showWelcomeDialog called");
+        // Esperar un poco para que la UI esté lista
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("LightActivity", "Showing welcome dialog");
+                AlertDialog.Builder builder = new AlertDialog.Builder(LightActivity.this);
+                builder.setTitle(getString(R.string.app_name));
+                builder.setMessage("¡Gracias por instalar la app!\n\n" +
+                        "Mientras terminamos la configuración inicial, mostraremos un anuncio para mantener la app en funcionamiento.");
+                builder.setPositiveButton("Continuar", (dialog, which) -> {
+                    Log.d("LightActivity", "User clicked Continuar, showing startup ad");
+                    dialog.dismiss();
+                    // Mostrar el anuncio de inicio después de cerrar el diálogo
+                    showStartupAd();
+                });
+                builder.setCancelable(false);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        }, 500);
+    }
+    
+    /**
+     * Show startup interstitial ad
+     */
+    private void showStartupAd() {
+        Log.d("LightActivity", "showStartupAd called");
+        AdMobHelper.showStartupInterstitial(this, new Runnable() {
+            @Override
+            public void run() {
+                // Anuncio cerrado, continuar con la app normalmente
+                Log.d("LightActivity", "Startup ad closed, app ready");
+            }
+        });
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -365,7 +440,7 @@ public class LightActivity extends AppCompatActivity {
         // Crear y mostrar la notificación
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
         builder.setContentTitle(titulo);
-        builder.setContentText("Linterna activa - Toca para controlar");
+       // builder.setContentText("Linterna activa - Toca para controlar");
         // Usar icono de la app - Android requiere iconos monocromáticos para notificaciones
         builder.setSmallIcon(R.drawable.bulbon); // Usar drawable en lugar de mipmap
         builder.setContentIntent(pIntent1);

@@ -152,6 +152,12 @@ private void updateBackground()
     private void closeDimer() {
         finish();
     }
+    
+    @Override
+    public void onBackPressed() {
+        // Mostrar intersticial también cuando se presiona el botón de atrás
+        close();
+    }
 }
 
 

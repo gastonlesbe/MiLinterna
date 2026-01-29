@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.IBinder;
 
 import android.widget.Toast;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -45,6 +46,8 @@ public class NotificationLight extends IntentService {
             camera1.release();
         }
 
+        // Crear el canal de notificaciones antes de usarlo
+        createNotificationChannel();
 
         isFlash1 = true;
     }
@@ -74,33 +77,51 @@ public class NotificationLight extends IntentService {
 
         if (isFlash1) {
             if (!isOn1) {
+                try {
+                    camera1 = Camera.open();
+                    
+                    if (camera1 == null) {
+                        Log.e("NotificationLight", "Camera is null, cannot open flashlight");
+                        return START_NOT_STICKY;
+                    }
 
-                camera1 = Camera.open();
+                    parameters1 = camera1.getParameters();
 
-                parameters1 = camera1.getParameters();
+                    // CharSequence titulo = getText(R.string.app_name);
+                    // Asegurarse de que el canal existe antes de crear la notificación
+                    createNotificationChannel();
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
+                    builder.setContentText(titulo);
+                    builder.setSmallIcon(R.drawable.notioff);
+                    builder.setContentIntent(pIntent1);
+                    builder.setOngoing(true);
+                    builder.addAction(R.drawable.buttonon, "ON", pendingIntent);
+                    builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+                    Notification notification = builder.build();
 
+                    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+                    notificationManagerCompat.notify(304, notification);
 
- // CharSequence titulo = getText(R.string.app_name);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
-        builder.setContentText(titulo);
-        builder.setSmallIcon(R.drawable.notioff);
-        builder.setContentIntent(pIntent1);
-        builder.setOngoing(true);
-        builder.addAction(R.drawable.buttonon, "ON", pendingIntent);
-        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
-        Notification notification = builder.build();
-
-
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        notificationManagerCompat.notify(304, notification);
-
-
-                Toast.makeText(getApplicationContext(), "Light On", Toast.LENGTH_LONG).show();
-                parameters1.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-                camera1.setParameters(parameters1);
-                camera1.startPreview();
-                isOn1 = true;
+                    Toast.makeText(getApplicationContext(), "Light On", Toast.LENGTH_LONG).show();
+                    parameters1.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                    camera1.setParameters(parameters1);
+                    camera1.startPreview();
+                    isOn1 = true;
+                } catch (Exception e) {
+                    Log.e("NotificationLight", "Error opening camera: " + e.getMessage());
+                    if (camera1 != null) {
+                        try {
+                            camera1.release();
+                        } catch (Exception ex) {
+                            Log.e("NotificationLight", "Error releasing camera: " + ex.getMessage());
+                        }
+                        camera1 = null;
+                    }
+                    return START_NOT_STICKY;
+                }
             } else {
+                // Asegurarse de que el canal existe antes de crear la notificación
+                createNotificationChannel();
                 Notification notification = new NotificationCompat.Builder(this)
                         .setContentText(titulo)
                         .setSmallIcon(R.drawable.notioff)
@@ -118,10 +139,18 @@ public class NotificationLight extends IntentService {
                 mNotificationManager.notify(33, notification);
 
                 Toast.makeText(getApplicationContext(), "Light Off", Toast.LENGTH_LONG).show();
-                parameters1.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-                camera1.setParameters(parameters1);
-                camera1.stopPreview();
-                camera1.release();
+                if (camera1 != null && parameters1 != null) {
+                    try {
+                        parameters1.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                        camera1.setParameters(parameters1);
+                        camera1.stopPreview();
+                        camera1.release();
+                    } catch (Exception e) {
+                        Log.e("NotificationLight", "Error turning off flashlight: " + e.getMessage());
+                    }
+                    camera1 = null;
+                    parameters1 = null;
+                }
                 isOn1 = false;
             }
 

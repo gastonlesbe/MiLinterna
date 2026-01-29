@@ -16,7 +16,7 @@
     <string name="rateme">Rate this App</string>
     <string name="tutorial">Tutorial</string>
     <string name="shareapp">Share This App</string>
-    <string name="dimer" translatable="false">Dimer</string>
+    <string name="dimer" translatable="false">Dimmer</string>
     <string name="title_activity_dimer" translatable="false">activity_dimer</string>
     <string name="channel_name" translatable="false">MiLinternaChannel</string>
     <string name="channel_description" translatable="false">Notification Channel</string>

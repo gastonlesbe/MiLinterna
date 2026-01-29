@@ -16,6 +16,8 @@ public class AppodealHelper {
     private static final String TAG = "AppodealHelper";
     private static boolean isInitialized = false;
     private static String initializedAppKey = null;
+    private static int currentContainerId = -1;
+    private static Activity currentActivity = null;
 
     /**
      * Initialize Appodeal SDK with app key
@@ -38,14 +40,14 @@ public class AppodealHelper {
         try {
             Log.d(TAG, "Initializing Appodeal with app key: " + (appKey != null ? appKey.substring(0, Math.min(10, appKey.length())) + "..." : "null"));
             
-            // Disable test mode for release builds
+            // Enable test mode for debug builds
             try {
                 boolean isDebug = (activity.getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-                if (!isDebug) {
-                    Appodeal.setTesting(false);
-                    Log.d(TAG, "Appodeal test mode disabled (release build)");
-                } else {
+                Appodeal.setTesting(isDebug);
+                if (isDebug) {
                     Log.d(TAG, "Appodeal test mode enabled (debug build)");
+                } else {
+                    Log.d(TAG, "Appodeal test mode disabled (release build)");
                 }
             } catch (Exception e) {
                 Log.w(TAG, "Could not set Appodeal test mode", e);
@@ -56,10 +58,30 @@ public class AppodealHelper {
                 @Override
                 public void onBannerLoaded(int height, boolean isPrecache) {
                     Log.d(TAG, "Banner loaded successfully, height: " + height + ", isPrecache: " + isPrecache);
-                    // Try to show banner when it's loaded
+                    // Try to show banner when it's loaded and add to container
                     try {
                         String packageName = activity.getPackageName();
                         Log.d(TAG, "Attempting to show banner for package: " + packageName);
+                        
+                        // Si hay un contenedor configurado, agregar el banner
+                        if (currentContainerId != -1 && currentActivity != null) {
+                            activity.runOnUiThread(() -> {
+                                try {
+                                    ViewGroup container = currentActivity.findViewById(currentContainerId);
+                                    if (container != null) {
+                                        removeBanner(container);
+                                        BannerView bannerView = Appodeal.getBannerView(currentActivity);
+                                        if (bannerView != null) {
+                                            container.addView(bannerView);
+                                            Log.d(TAG, "Banner view added to container in callback");
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Error adding banner to container in callback", e);
+                                }
+                            });
+                        }
+                        
                         Appodeal.show(activity, Appodeal.BANNER);
                     } catch (Exception e) {
                         Log.e(TAG, "Error showing banner after load", e);
@@ -142,6 +164,10 @@ public class AppodealHelper {
                 Log.e(TAG, "Package name: " + activity.getPackageName());
                 return;
             }
+
+            // Guardar referencia al contenedor y actividad para el callback
+            currentContainerId = containerId;
+            currentActivity = activity;
 
             Log.d(TAG, "Attempting to show banner in container ID: " + containerId);
             Log.d(TAG, "Package name: " + activity.getPackageName());
