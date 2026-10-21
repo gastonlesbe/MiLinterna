@@ -8,16 +8,16 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdk 35
+    compileSdk 36
     ndkVersion "26.1.10909125"
     defaultConfig {
         applicationId "lesbegueris.gaston.com.milinterna"
-        minSdkVersion 23  // Updated to support Appodeal SDK 3.8.0.0 (requires minSdk 23)
-        targetSdk 35  // Updated to meet Google Play requirements (Android 15)
-        versionName '1.9.2'
+        minSdkVersion 30  // Raised to 30 to allow v3 key rotation (Play Store requirement)
+        targetSdk 36
+        versionName '2.1.1'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        versionCode 92
-        resourceConfigurations += ['en', 'es', 'pt', 'en_US', 'pt_BR', 'en_GB', 'es_US', 'es_419', '']
+        versionCode 99
+        resourceConfigurations += ['en', 'es', 'pt', 'en_US', 'pt_BR', 'en_GB', 'es_US', 'es_419']
     }
 
     signingConfigs {
@@ -34,7 +34,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
     }
@@ -79,17 +79,20 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.gms:play-services-ads:23.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation 'com.google.android.gms:play-services-ads:25.2.0'
     implementation 'junit:junit:4.13.2'
-    implementation 'androidx.core:core:1.13.1'
-    implementation 'androidx.test.ext:junit:1.2.1'
-    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.core:core:1.18.0'
+    implementation 'androidx.test.ext:junit:1.3.0'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'androidx.preference:preference:1.2.1'
+    implementation 'com.google.android.play:review:2.0.1'
+    // Required by Unity Ads (inside Appodeal) for purchase attribution — forces v8 bridge usage
+    implementation 'com.android.billingclient:billing:8.0.0'
 
     // Appodeal SDK (same version as Caretemplate/PetPal)
     // Excluding MyTarget network and MyTracker SDK to fix Google Play policy violation
-    implementation("com.appodeal.ads:sdk:3.8.0.0") {
+    implementation("com.appodeal.ads:sdk:3.12.0.1") {
         exclude group: "com.appodeal.ads.sdk.services", module: "adjust"
         exclude group: "com.appodeal.ads.sdk.services", module: "appsflyer"
         exclude group: "com.appodeal.ads.sdk.services", module: "facebook_analytics"

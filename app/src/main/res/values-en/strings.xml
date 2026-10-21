@@ -7,4 +7,12 @@
     <string name="emailme">Send me an Email</string>
     <string name="rateme">Rate this App</string>
     <string name="shareapp">Share This App</string>
+    <string name="griscal_promo_message">Organize your family, pets, home and vehicles — all in one app. Free to try.</string>
+    <string name="griscal_promo_cta">Try Griscal</string>
+    <string name="griscal_promo_dismiss">Maybe later</string>
+
+    <string name="menu_theme_dark">Dark Mode</string>
+    <string name="menu_theme_light">Light Mode</string>
+    <string name="menu_contact">Contact</string>
+    <string name="menu_our_apps">Our Apps</string>
 </resources>

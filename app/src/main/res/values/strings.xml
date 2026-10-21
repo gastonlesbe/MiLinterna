@@ -24,4 +24,13 @@
     <string name="HelpDimer">Para usar Dimer</string>
     <string name="appodeal_app_key">77043cce5169a8ba14f2b2a43e009d4853f76330ed9b8d11</string>
 
+    <string name="griscal_promo_message">Organizá tu familia, mascotas, hogar y vehículos — todo en una sola app. Gratis para probar.</string>
+    <string name="griscal_promo_cta">Probar Griscal</string>
+    <string name="griscal_promo_dismiss">Ahora no</string>
+
+    <string name="menu_theme_dark">Modo Oscuro</string>
+    <string name="menu_theme_light">Modo Claro</string>
+    <string name="menu_contact">Contacto</string>
+    <string name="menu_our_apps">Nuestras Apps</string>
+
 </resources>

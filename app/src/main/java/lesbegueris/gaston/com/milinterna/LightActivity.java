@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
@@ -33,10 +34,17 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
 
 import static lesbegueris.gaston.com.milinterna.NotificationLight.CHANNEL_ID;
 
@@ -77,7 +85,19 @@ public class LightActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Apply saved dark/light mode before layout inflation
+        SharedPreferences appPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isDark = appPrefs.getBoolean("dark_mode", true);
+        AppCompatDelegate.setDefaultNightMode(
+                isDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+
         setContentView(R.layout.activity_main);
+
+        // Track open count and trigger review / Griscal promo (only on fresh start, not recreate)
+        if (savedInstanceState == null) {
+            trackOpens();
+        }
 
         // =====================================================================
         // AdMob removido - Appodeal ya incluye AdMob en su mediation
@@ -89,16 +109,10 @@ public class LightActivity extends AppCompatActivity {
         // =====================================================================
         
         // =====================================================================
-        // --- APPODEAL INITIALIZATION (for banners) - AFTER AdMob ---
+        // --- APPODEAL BANNER (same pattern as PermissionInspector) ---
         String appodealAppKey = getString(R.string.appodeal_app_key);
         AppodealHelper.initialize(this, appodealAppKey);
-        // Delay banner to ensure AdMob initializes first
-        new android.os.Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                AppodealHelper.showBanner(LightActivity.this, R.id.appodealBannerView);
-            }
-        }, 500);
+        AppodealHelper.showBanner(this);
         // =====================================================================
 
         isTorchOn = false;
@@ -163,6 +177,14 @@ public class LightActivity extends AppCompatActivity {
                 startDimer();
             }
         });
+
+        LinearLayout dimerRow = (LinearLayout) findViewById(R.id.dimerRow);
+        dimerRow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDimer();
+            }
+        });
         ibtnMenu = (ImageButton) findViewById(R.id.ibtnMenu);
         Intent intent = getIntent();
         isNotiOn = intent.getBooleanExtra("inNotiOn", false); // Por defecto false
@@ -212,11 +234,22 @@ public class LightActivity extends AppCompatActivity {
             try {
                 versionItem.setTitle("v" + getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
             } catch (PackageManager.NameNotFoundException e) {
-                versionItem.setTitle("v1.9.2");
+                versionItem.setTitle("v2.0");
             }
             versionItem.setEnabled(false);
         }
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem themeItem = menu.findItem(R.id.theme_toggle);
+        if (themeItem != null) {
+            boolean isDark = PreferenceManager.getDefaultSharedPreferences(this)
+                    .getBoolean("dark_mode", true);
+            themeItem.setTitle(isDark ? getString(R.string.menu_theme_light) : getString(R.string.menu_theme_dark));
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
     
     /**
@@ -261,18 +294,60 @@ public class LightActivity extends AppCompatActivity {
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.rate:
-                rateMe();
-                return true;
-            case R.id.share:
-                share();
-                return true;
-            case R.id.emailme:
-                mandarEmail();
-                return true;
+        int id = item.getItemId();
+        if (id == R.id.theme_toggle) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean isDark = prefs.getBoolean("dark_mode", true);
+            prefs.edit().putBoolean("dark_mode", !isDark).apply();
+            AppCompatDelegate.setDefaultNightMode(
+                    !isDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+            recreate();
+            return true;
+        } else if (id == R.id.contact) {
+            mandarEmail();
+            return true;
+        } else if (id == R.id.app_carepal_pets) {
+            openPlayStore("com.gastonlesbegueris.caretemplate.pets");
+            return true;
+        } else if (id == R.id.app_carepal_cars) {
+            openPlayStore("com.gastonlesbegueris.caretemplate.cars");
+            return true;
+        } else if (id == R.id.app_carepal_family) {
+            openPlayStore("com.gastonlesbegueris.caretemplate.family");
+            return true;
+        } else if (id == R.id.app_carepal_house) {
+            openPlayStore("com.gastonlesbegueris.caretemplate.house");
+            return true;
+        } else if (id == R.id.app_griscal) {
+            openPlayStore("app.griscal.notif");
+            return true;
+        } else if (id == R.id.app_gpsalert) {
+            openPlayStore("com.gaston.lesbegueris.notepases");
+            return true;
+        } else if (id == R.id.app_milupa) {
+            openPlayStore("lesbegueris.gaston.com.milupa");
+            return true;
+        } else if (id == R.id.app_permission_inspector) {
+            openPlayStore("com.griscal.permissioninspector");
+            return true;
+        } else if (id == R.id.rate) {
+            rateMe();
+            return true;
+        } else if (id == R.id.share) {
+            share();
+            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openPlayStore(String packageName) {
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("market://details?id=" + packageName)));
+        } catch (android.content.ActivityNotFoundException e) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/details?id=" + packageName)));
+        }
     }
 
     private void startDimer() {
@@ -496,23 +571,54 @@ public class LightActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Show banner when activity resumes
-        String appodealAppKey = getString(R.string.appodeal_app_key);
-        AppodealHelper.initialize(this, appodealAppKey);
-        AppodealHelper.showBanner(this, R.id.appodealBannerView);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Hide banner when activity pauses
-        AppodealHelper.hideBanner(this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Hide banner when activity is destroyed
-        AppodealHelper.hideBanner(this);
+    }
+
+    private void trackOpens() {
+        SharedPreferences prefs = getSharedPreferences("app_opens", MODE_PRIVATE);
+        int count = prefs.getInt("count", 0) + 1;
+        prefs.edit().putInt("count", count).apply();
+
+        if (count == 5) {
+            new android.os.Handler().postDelayed(this::requestInAppReview, 2000);
+        }
+        if (count % 10 == 0) {
+            showGriscalPromo();
+        }
+    }
+
+    private void requestInAppReview() {
+        ReviewManager manager = ReviewManagerFactory.create(this);
+        manager.requestReviewFlow().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                ReviewInfo reviewInfo = task.getResult();
+                manager.launchReviewFlow(this, reviewInfo);
+            }
+        });
+    }
+
+    private void showGriscalPromo() {
+        android.view.View promoView = getLayoutInflater().inflate(R.layout.dialog_griscal_promo, null);
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setView(promoView);
+        builder.setCancelable(true);
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
+        promoView.findViewById(R.id.btnPromoCta).setOnClickListener(v -> {
+            startActivity(new android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://griscal.app")));
+            dialog.dismiss();
+        });
+        promoView.findViewById(R.id.btnPromoDismiss).setOnClickListener(v -> dialog.dismiss());
+        new android.os.Handler().postDelayed(() -> {
+            if (!isFinishing() && !isDestroyed()) dialog.show();
+        }, 1500);
     }
 }

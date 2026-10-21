@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Production ad unit IDs. Debug builds override these with Google's sample IDs in
+     src/debug/res/values/ads.xml so emulator/dev runs never request live ads. -->
+<resources>
+    <string name="admob_interstitial_id" translatable="false">ca-app-pub-9841764898906750/9797523615</string>
+    <string name="admob_banner_id" translatable="false">ca-app-pub-9841764898906750/8090071538</string>
+    <string name="admob_startup_interstitial_id" translatable="false">ca-app-pub-9841764898906750/3480675774</string>
+    <bool name="appodeal_testing">false</bool>
+</resources>

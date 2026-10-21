@@ -7,4 +7,12 @@
     <string name="emailme">Escreva-me um email</string>
     <string name="rateme">Avalie esta aplicação</string>
     <string name="shareapp">Compartilhe este aplicativo</string>
+    <string name="griscal_promo_message">Organize sua família, pets, casa e veículos — tudo em um app. Gratuito.</string>
+    <string name="griscal_promo_cta">Experimentar Griscal</string>
+    <string name="griscal_promo_dismiss">Agora não</string>
+
+    <string name="menu_theme_dark">Modo Escuro</string>
+    <string name="menu_theme_light">Modo Claro</string>
+    <string name="menu_contact">Contato</string>
+    <string name="menu_our_apps">Nossos Apps</string>
 </resources>

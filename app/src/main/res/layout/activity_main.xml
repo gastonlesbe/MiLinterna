@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#242424"
+    android:background="@color/background_color"
 
     android:hapticFeedbackEnabled="false"
     android:orientation="vertical"
@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="60dp"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -35,158 +35,92 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
             android:orientation="vertical">
 
+            <!-- Flashlight row -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
+                android:layout_height="100dp"
+                android:layout_margin="10dp"
+                android:background="@drawable/rounded_border2"
                 android:gravity="center"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/textView4"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/activaparashake"
-                    android:visibility="invisible"
-                    tools:visibility="invisible" />
+                    android:layout_marginStart="20dp"
+                    android:text="@string/prenderlinterna" />
 
                 <ImageButton
-                    android:id="@+id/btnShake"
+                    android:id="@+id/btnNoti"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@mipmap/ic_switch3off_foreground"
                     android:contentDescription="@string/todo"
-                    android:padding="30dp"
+                    android:padding="25dp"
                     android:scaleType="fitCenter" />
 
             </LinearLayout>
 
+            <!-- Notification row -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
+                android:layout_height="100dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/rounded_border2"
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="20dp"
+                    android:text="@string/Notification" />
+
+                <ImageButton
+                    android:id="@+id/btnFlash"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/textView4"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_weight="1"
-                        android:text="@string/prenderlinterna" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="end"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:id="@+id/btnNoti"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@mipmap/ic_switch3off_foreground"
-                        android:contentDescription="@string/todo"
-                        android:padding="30dp"
-                        android:scaleType="fitCenter" />
-
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/ic_switch3off_foreground"
+                    android:contentDescription="@string/todo"
+                    android:padding="25dp"
+                    android:scaleType="fitCenter" />
 
             </LinearLayout>
 
+            <!-- Dimmer row -->
             <LinearLayout
+                android:id="@+id/dimerRow"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
+                android:layout_height="100dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/rounded_border2"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="20dp"
+                    android:text="@string/dimer" />
 
-                    <TextView
-                        android:id="@+id/textView3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:text="@string/Notification" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="end"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:id="@+id/btnFlash"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@mipmap/ic_switch3off_foreground"
-                        android:contentDescription="@string/todo"
-                        android:padding="30dp"
-                        android:scaleType="fitCenter" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:background="@drawable/rounded_border2"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:text="@string/dimer" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="end"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:id="@+id/btnDimer"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_margin="10dp"
-                        android:background="@mipmap/ic_bulbon"
-                        android:contentDescription="@string/todo" />
-                </LinearLayout>
+                <ImageButton
+                    android:id="@+id/btnDimer"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@mipmap/bulb4_foreground"
+                    android:contentDescription="@string/todo"
+                    android:padding="25dp"
+                    android:scaleType="fitCenter" />
 
             </LinearLayout>
 
@@ -195,15 +129,12 @@
 
     </LinearLayout>
 
-    <!-- AdMob Banner Ad - Ubicado en la parte inferior -->
+    <!-- Banner Ad -->
     <FrameLayout
         android:id="@+id/appodealBannerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="0dp"
-        android:minHeight="50dp"
-        android:background="#F0F0F0" />
+        android:layout_marginBottom="80dp" />
 
 
 </LinearLayout>

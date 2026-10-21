@@ -12,6 +12,7 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.AdListener;
+import lesbegueris.gaston.com.milinterna.R;
 
 /**
  * Helper class for AdMob ads (banner and interstitial)
@@ -23,10 +24,8 @@ public class AdMobHelper {
     private static AdView mBannerAd = null;
     private static boolean isInitialized = false;
     
-    // AdMob Ad Unit IDs
-    private static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-9841764898906750/9797523615";
-    private static final String BANNER_AD_UNIT_ID = "ca-app-pub-9841764898906750/8090071538";
-    private static final String STARTUP_INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-9841764898906750/3480675774";
+    // AdMob Ad Unit IDs live in res/values/ads.xml (production) and are overridden by
+    // src/debug/res/values/ads.xml (Google sample IDs) for debug builds.
     
     private static InterstitialAd mStartupInterstitialAd = null;
     
@@ -62,7 +61,7 @@ public class AdMobHelper {
         
         AdRequest adRequest = new AdRequest.Builder().build();
         
-        InterstitialAd.load(activity, INTERSTITIAL_AD_UNIT_ID, adRequest,
+        InterstitialAd.load(activity, activity.getString(R.string.admob_interstitial_id), adRequest,
             new InterstitialAdLoadCallback() {
                 @Override
                 public void onAdLoaded(InterstitialAd interstitialAd) {
@@ -167,7 +166,7 @@ public class AdMobHelper {
             
             // Create new AdView
             mBannerAd = new AdView(activity);
-            mBannerAd.setAdUnitId(BANNER_AD_UNIT_ID);
+            mBannerAd.setAdUnitId(activity.getString(R.string.admob_banner_id));
             mBannerAd.setAdSize(com.google.android.gms.ads.AdSize.BANNER);
             
             // Set layout parameters
@@ -260,10 +259,10 @@ public class AdMobHelper {
     }
     
     private static void loadStartupInterstitialAd(Activity activity) {
-        Log.d(TAG, "loadStartupInterstitialAd called with Ad Unit ID: " + STARTUP_INTERSTITIAL_AD_UNIT_ID);
+        Log.d(TAG, "loadStartupInterstitialAd called with Ad Unit ID: " + activity.getString(R.string.admob_startup_interstitial_id));
         AdRequest adRequest = new AdRequest.Builder().build();
         
-        InterstitialAd.load(activity, STARTUP_INTERSTITIAL_AD_UNIT_ID, adRequest,
+        InterstitialAd.load(activity, activity.getString(R.string.admob_startup_interstitial_id), adRequest,
             new InterstitialAdLoadCallback() {
                 @Override
                 public void onAdLoaded(InterstitialAd interstitialAd) {

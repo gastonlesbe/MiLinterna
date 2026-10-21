@@ -8,3 +8,11 @@
 /captures
 .externalNativeBuild
 keystore.properties
+
+# Signed builds, recordings, heap dumps
+*.aab
+*.apk
+app/release/
+videos/
+Videos/
+*.hprof

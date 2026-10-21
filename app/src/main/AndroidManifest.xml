@@ -49,16 +49,21 @@
             android:name="com.appodeal.application_key"
             android:value="@string/appodeal_app_key" />
 
+        <activity android:name=".SplashActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            android:exported="true"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".LightActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
+            android:exported="false">
         </activity>
 
         <activity android:name=".Dimer"
