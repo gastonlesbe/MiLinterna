@@ -16,3 +16,8 @@ app/release/
 videos/
 Videos/
 *.hprof
+
+# Signing secrets live in .env and ~/secrets/keystores
+.env
+*.jks
+*.keystore

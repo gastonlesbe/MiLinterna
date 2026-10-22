@@ -34,9 +34,9 @@ La nueva clave entrará en vigencia el **18 de diciembre de 2025 a las 8:07 PM U
    Debe mostrar:
    ```
    storeFile=milinterna_upload_keystore.jks
-   storePassword=Bru1034Bri
+   storePassword=<en .env>
    keyAlias=upload
-   keyPassword=Bru1034Bri
+   keyPassword=<en .env>
    ```
 
 2. **Generar el AAB firmado:**
