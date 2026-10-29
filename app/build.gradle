@@ -18,9 +18,9 @@ android {
         applicationId "lesbegueris.gaston.com.milinterna"
         minSdkVersion 30  // Raised to 30 to allow v3 key rotation (Play Store requirement)
         targetSdk 36
-        versionName '2.1.1'
+        versionName '2.1.2'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        versionCode 99
+        versionCode 100
         resourceConfigurations += ['en', 'es', 'pt', 'en_US', 'pt_BR', 'en_GB', 'es_US', 'es_419']
     }
 
