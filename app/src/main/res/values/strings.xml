@@ -22,7 +22,7 @@
     <string name="channel_description" translatable="false">Notification Channel</string>
     <string name="todo">TODO</string>
     <string name="HelpDimer">Para usar Dimer</string>
-    <string name="appodeal_app_key">77043cce5169a8ba14f2b2a43e009d4853f76330ed9b8d11</string>
+    <string name="appodeal_app_key" translatable="false">77043cce5169a8ba14f2b2a43e009d4853f76330ed9b8d11</string>
 
     <string name="griscal_promo_message">Organizá tu familia, mascotas, hogar y vehículos — todo en una sola app. Gratis para probar.</string>
     <string name="griscal_promo_cta">Probar Griscal</string>

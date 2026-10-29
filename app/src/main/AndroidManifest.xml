@@ -66,12 +66,16 @@
             android:exported="false">
         </activity>
 
+        <!-- Dimer/DimerBright extend android.app.Activity (not ComponentActivity): keep legacy
+             onBackPressed dispatch (interstitial before close) on Android 16 until migrated. -->
         <activity android:name=".Dimer"
+            android:enableOnBackInvokedCallback="false"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:exported="false"/>
 
         <activity android:name=".DimerBright"
+            android:enableOnBackInvokedCallback="false"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:exported="false"/>
