@@ -15,4 +15,21 @@
     <string name="menu_theme_light">Modo Claro</string>
     <string name="menu_contact">Contato</string>
     <string name="menu_our_apps">Nossos Apps</string>
+
+    <string name="light_on">Luz acesa</string>
+    <string name="light_off">Luz apagada</string>
+    <string name="no_flash">Sem flash</string>
+    <string name="notif_action_on">LIGAR</string>
+    <string name="service_channel_name">Canal do serviço da lanterna</string>
+    <string name="welcome_message">Obrigado por instalar o app!\n\nEnquanto terminamos a configuração inicial, vamos mostrar um anúncio para manter o app funcionando.</string>
+    <string name="welcome_continue">Continuar</string>
+    <string name="share_chooser_title">Compartilhe!</string>
+    <string name="email_subject">De My Lupa</string>
+    <string name="action_received">recebido</string>
+    <string name="menu_app_carepal_pets">CarePal: Pets e Saúde</string>
+    <string name="menu_app_carepal_cars">CarePal: Carros e Revisão</string>
+    <string name="menu_app_carepal_family">CarePal: Família e Agenda</string>
+    <string name="menu_app_carepal_house">CarePal: Casa e Manutenção</string>
+    <string name="menu_app_griscal">Griscal: Casa e Família</string>
+    <string name="menu_app_gpsalert">GPS Alert – Alarme de localização</string>
 </resources>

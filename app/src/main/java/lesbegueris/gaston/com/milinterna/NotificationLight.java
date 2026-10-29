@@ -95,14 +95,14 @@ public class NotificationLight extends IntentService {
                     builder.setSmallIcon(R.drawable.notioff);
                     builder.setContentIntent(pIntent1);
                     builder.setOngoing(true);
-                    builder.addAction(R.drawable.buttonon, "ON", pendingIntent);
+                    builder.addAction(R.drawable.buttonon, getString(R.string.notif_action_on), pendingIntent);
                     builder.setPriority(NotificationCompat.PRIORITY_HIGH);
                     Notification notification = builder.build();
 
                     NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
                     notificationManagerCompat.notify(304, notification);
 
-                    Toast.makeText(getApplicationContext(), "Light On", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.light_on, Toast.LENGTH_LONG).show();
                     parameters1.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
                     camera1.setParameters(parameters1);
                     camera1.startPreview();
@@ -127,7 +127,7 @@ public class NotificationLight extends IntentService {
                         .setSmallIcon(R.drawable.notioff)
                         .setContentIntent(pIntent1)
                         .setOngoing(true)
-                        .addAction(R.drawable.buttonon, "ON", pendingIntent)
+                        .addAction(R.drawable.buttonon, getString(R.string.notif_action_on), pendingIntent)
                         .setChannelId(CHANNEL_ID)
                         .build();
 
@@ -138,7 +138,7 @@ public class NotificationLight extends IntentService {
 
                 mNotificationManager.notify(33, notification);
 
-                Toast.makeText(getApplicationContext(), "Light Off", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.light_off, Toast.LENGTH_LONG).show();
                 if (camera1 != null && parameters1 != null) {
                     try {
                         parameters1.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
@@ -197,7 +197,7 @@ public class NotificationLight extends IntentService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel serviceChannel = new NotificationChannel(
                     CHANNEL_ID,
-                    "NotificationLight Service Channel",
+                    getString(R.string.service_channel_name),
                     NotificationManager.IMPORTANCE_DEFAULT
             );
 

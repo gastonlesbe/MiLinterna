@@ -15,4 +15,21 @@
     <string name="menu_theme_light">Light Mode</string>
     <string name="menu_contact">Contact</string>
     <string name="menu_our_apps">Our Apps</string>
+
+    <string name="light_on">Light On</string>
+    <string name="light_off">Light Off</string>
+    <string name="no_flash">No Flash</string>
+    <string name="notif_action_on">ON</string>
+    <string name="service_channel_name">NotificationLight Service Channel</string>
+    <string name="welcome_message">Thanks for installing the app!\n\nWhile we finish the initial setup, we\'ll show an ad to keep the app running.</string>
+    <string name="welcome_continue">Continue</string>
+    <string name="share_chooser_title">Share me!</string>
+    <string name="email_subject">From My Lupa</string>
+    <string name="action_received">received</string>
+    <string name="menu_app_carepal_pets">CarePal: Pets &amp; Health</string>
+    <string name="menu_app_carepal_cars">CarePal: Cars &amp; Service</string>
+    <string name="menu_app_carepal_family">CarePal: Family &amp; Planner</string>
+    <string name="menu_app_carepal_house">CarePal: Home &amp; Maintenance</string>
+    <string name="menu_app_griscal">Griscal: Home &amp; Family</string>
+    <string name="menu_app_gpsalert">GPS Alert – Location Alarm</string>
 </resources>

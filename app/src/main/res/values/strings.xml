@@ -33,4 +33,31 @@
     <string name="menu_contact">Contacto</string>
     <string name="menu_our_apps">Nuestras Apps</string>
 
+    <!-- Extracted from code/layouts 2026-10-29 (default text kept verbatim) -->
+    <string name="light_on">Light On</string>
+    <string name="light_off">Light Off</string>
+    <string name="no_flash">No Flash</string>
+    <string name="notif_action_on">ON</string>
+    <string name="notif_action_app" translatable="false">APP</string>
+    <string name="notif_action_dimmer" translatable="false">DIMMER</string>
+    <string name="service_channel_name">NotificationLight Service Channel</string>
+    <string name="welcome_message">¡Gracias por instalar la app!\n\nMientras terminamos la configuración inicial, mostraremos un anuncio para mantener la app en funcionamiento.</string>
+    <string name="welcome_continue">Continuar</string>
+    <string name="share_chooser_title">¡¡¡Compartime!!!</string>
+    <string name="email_subject">Desde My Lupa</string>
+    <string name="action_received">recieved</string>
+    <string name="version_format" translatable="false">v%1$s</string>
+    <string name="version_fallback" translatable="false">v2.0</string>
+    <string name="version_placeholder" translatable="false">v</string>
+    <string name="brand_griscal" translatable="false">Griscal</string>
+
+    <!-- "Our apps" submenu -->
+    <string name="menu_app_carepal_pets">CarePal: Mascotas y Salud</string>
+    <string name="menu_app_carepal_cars">CarePal: Autos y Service</string>
+    <string name="menu_app_carepal_family">CarePal: Familia y Agenda</string>
+    <string name="menu_app_carepal_house">CarePal: Hogar y Mantenimiento</string>
+    <string name="menu_app_griscal">Griscal: Hogar y Familia</string>
+    <string name="menu_app_gpsalert">GPS Alert – Location Alarm</string>
+    <string name="menu_app_milupa" translatable="false">MiLupa</string>
+    <string name="menu_app_permission_inspector" translatable="false">Permission Inspector</string>
 </resources>

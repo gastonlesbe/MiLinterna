@@ -209,7 +209,7 @@ public class LightActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!hasFlash) {
-                    Toast.makeText(getApplicationContext(), "No Flash", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.no_flash, Toast.LENGTH_LONG).show();
                 } else {
                     lightOn();
                 }
@@ -232,9 +232,9 @@ public class LightActivity extends AppCompatActivity {
         MenuItem versionItem = menu.findItem(R.id.version);
         if (versionItem != null) {
             try {
-                versionItem.setTitle("v" + getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+                versionItem.setTitle(getString(R.string.version_format, getPackageManager().getPackageInfo(getPackageName(), 0).versionName));
             } catch (PackageManager.NameNotFoundException e) {
-                versionItem.setTitle("v2.0");
+                versionItem.setTitle(R.string.version_fallback);
             }
             versionItem.setEnabled(false);
         }
@@ -264,9 +264,8 @@ public class LightActivity extends AppCompatActivity {
                 Log.d("LightActivity", "Showing welcome dialog");
                 AlertDialog.Builder builder = new AlertDialog.Builder(LightActivity.this);
                 builder.setTitle(getString(R.string.app_name));
-                builder.setMessage("¡Gracias por instalar la app!\n\n" +
-                        "Mientras terminamos la configuración inicial, mostraremos un anuncio para mantener la app en funcionamiento.");
-                builder.setPositiveButton("Continuar", (dialog, which) -> {
+                builder.setMessage(R.string.welcome_message);
+                builder.setPositiveButton(R.string.welcome_continue, (dialog, which) -> {
                     Log.d("LightActivity", "User clicked Continuar, showing startup ad");
                     dialog.dismiss();
                     // Mostrar el anuncio de inicio después de cerrar el diálogo
@@ -375,7 +374,7 @@ public class LightActivity extends AppCompatActivity {
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("text/plain");
         share.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=lesbegueris.gaston.com.milinterna");
-        startActivity(Intent.createChooser(share, "¡¡¡Compartime!!!"));
+        startActivity(Intent.createChooser(share, getString(R.string.share_chooser_title)));
     }
 
     private void rateMe() {
@@ -387,7 +386,7 @@ public class LightActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("plain/text");
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"lesberweb@gmail.com"});
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Desde My Lupa");
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject));
         startActivity(Intent.createChooser(intent, ""));
     }
 
@@ -519,8 +518,8 @@ public class LightActivity extends AppCompatActivity {
         // Usar icono de la app - Android requiere iconos monocromáticos para notificaciones
         builder.setSmallIcon(R.drawable.bulbon); // Usar drawable en lugar de mipmap
         builder.setContentIntent(pIntent1);
-        builder.addAction(R.drawable.buttonon, "APP", pIntent1);
-        builder.addAction(R.drawable.buttonon, "DIMMER", pIntent2);
+        builder.addAction(R.drawable.buttonon, getString(R.string.notif_action_app), pIntent1);
+        builder.addAction(R.drawable.buttonon, getString(R.string.notif_action_dimmer), pIntent2);
         builder.setOngoing(true);
         builder.setPriority(NotificationCompat.PRIORITY_HIGH);
         builder.setAutoCancel(false);
