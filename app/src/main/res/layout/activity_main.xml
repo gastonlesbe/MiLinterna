@@ -66,6 +66,36 @@
 
             </LinearLayout>
 
+            <!-- Flashlight brightness row (only shown on Android 13+ devices with a dimmable flash) -->
+            <LinearLayout
+                android:id="@+id/brightnessRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/rounded_border2"
+                android:orientation="vertical"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvBrightness"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp" />
+
+                <SeekBar
+                    android:id="@+id/seekBrightness"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:contentDescription="@string/flash_brightness_desc" />
+
+            </LinearLayout>
+
             <!-- Notification row -->
             <LinearLayout
                 android:layout_width="match_parent"

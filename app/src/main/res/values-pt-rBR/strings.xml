@@ -32,4 +32,9 @@
     <string name="menu_app_carepal_house">CarePal: Casa e Manutenção</string>
     <string name="menu_app_griscal">Griscal: Casa e Família</string>
     <string name="menu_app_gpsalert">GPS Alert – Alarme de localização</string>
+
+    <!-- Flashlight brightness (Android 13+) -->
+    <string name="flash_brightness_label">Intensidade da lanterna</string>
+    <string name="flash_brightness_desc">Intensidade da lanterna</string>
+    <string name="notif_brightness_text">Intensidade da lanterna</string>
 </resources>

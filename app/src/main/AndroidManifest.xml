@@ -80,9 +80,9 @@
             android:screenOrientation="portrait"
             android:exported="false"/>
 
-
-
-
+        <!-- Flashlight brightness -/+ actions of the notification (Android 13+ dimmable flash) -->
+        <receiver android:name=".TorchLevelReceiver"
+            android:exported="false"/>
 
     </application>
 

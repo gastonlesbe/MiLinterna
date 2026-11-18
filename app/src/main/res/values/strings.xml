@@ -60,4 +60,11 @@
     <string name="menu_app_gpsalert">GPS Alert – Location Alarm</string>
     <string name="menu_app_milupa" translatable="false">MiLupa</string>
     <string name="menu_app_permission_inspector" translatable="false">Permission Inspector</string>
+
+    <!-- Flashlight brightness (Android 13+) -->
+    <string name="flash_brightness_label">Flashlight brightness</string>
+    <string name="flash_brightness_desc">Flashlight brightness</string>
+    <string name="notif_brightness_text">Flashlight brightness</string>
+    <string name="notif_action_brightness_down" translatable="false">−</string>
+    <string name="notif_action_brightness_up" translatable="false">+</string>
 </resources>

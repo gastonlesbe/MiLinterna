@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Toast;
 import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
@@ -69,6 +70,25 @@ public class LightActivity extends AppCompatActivity {
     boolean shakeOn;
     boolean restoredText = false;
     private Boolean isTorchOn;
+
+    // Flashlight brightness (Android 13+ dimmable flash)
+    public static final int FLASH_NOTIFICATION_ID = 304;
+    private int torchMaxLevel = 1;
+    private boolean torchActuallyOn = false; // real state from TorchCallback (also catches the Quick Settings tile)
+    private LinearLayout brightnessRow;
+    private SeekBar seekBrightness;
+    private TextView tvBrightness;
+    private final CameraManager.TorchCallback torchCallback = new CameraManager.TorchCallback() {
+        @Override
+        public void onTorchModeChanged(String cameraId, boolean enabled) {
+            if (cameraId.equals(mCameraId)) torchActuallyOn = enabled;
+        }
+
+        @Override
+        public void onTorchModeUnavailable(String cameraId) {
+            if (cameraId.equals(mCameraId)) torchActuallyOn = false;
+        }
+    };
 
 
     private int counter = 0;
@@ -133,6 +153,9 @@ public class LightActivity extends AppCompatActivity {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 mCameraId = mCameraManager.getCameraIdList()[0];
+                // Same camera the brightness helper / notification receiver use (id 0 when it has a flash)
+                String flashCameraId = TorchStrength.findFlashCameraId(mCameraManager);
+                if (flashCameraId != null) mCameraId = flashCameraId;
             }
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -223,6 +246,67 @@ public class LightActivity extends AppCompatActivity {
                 turnOn();
             }
         });
+
+        setupBrightnessSlider();
+    }
+
+    private void setupBrightnessSlider() {
+        brightnessRow = (LinearLayout) findViewById(R.id.brightnessRow);
+        seekBrightness = (SeekBar) findViewById(R.id.seekBrightness);
+        tvBrightness = (TextView) findViewById(R.id.tvBrightness);
+        torchMaxLevel = TorchStrength.getMaxLevel(this);
+        if (torchMaxLevel <= 1) {
+            brightnessRow.setVisibility(View.GONE);
+            return;
+        }
+        brightnessRow.setVisibility(View.VISIBLE);
+        seekBrightness.setMin(1);
+        seekBrightness.setMax(torchMaxLevel);
+        updateBrightnessUi(TorchStrength.getSavedLevel(this));
+        seekBrightness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (!fromUser) return;
+                int level = Math.max(1, progress);
+                TorchStrength.saveLevel(LightActivity.this, level);
+                tvBrightness.setText(getString(R.string.flash_brightness_label));
+                if (torchActuallyOn) {
+                    TorchStrength.applyLevel(mCameraManager, mCameraId, level);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                refreshFlashNotification();
+            }
+        });
+    }
+
+    private void updateBrightnessUi(int level) {
+        if (seekBrightness == null || torchMaxLevel <= 1) return;
+        seekBrightness.setProgress(level);
+        tvBrightness.setText(getString(R.string.flash_brightness_label));
+    }
+
+    /** Updates the level shown in the notification if it is currently showing. */
+    private void refreshFlashNotification() {
+        if (!isNotiOn) return;
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (nm == null) return;
+        for (android.service.notification.StatusBarNotification sbn : nm.getActiveNotifications()) {
+            if (sbn.getId() == FLASH_NOTIFICATION_ID) {
+                try {
+                    NotificationManagerCompat.from(this).notify(FLASH_NOTIFICATION_ID, buildFlashNotification(this));
+                } catch (SecurityException e) {
+                    Log.e("LightActivity", "Notification permission missing", e);
+                }
+                return;
+            }
+        }
     }
 
     // --- The rest of your file remains unchanged below this point ---
@@ -409,7 +493,7 @@ public class LightActivity extends AppCompatActivity {
                 imagebutton.setBackgroundResource((R.mipmap.ic_switch3on_foreground));
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        mCameraManager.setTorchMode(mCameraId, true);
+                        TorchStrength.turnOn(this, mCameraManager, mCameraId);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -432,7 +516,7 @@ public class LightActivity extends AppCompatActivity {
     public void turnOnFlashLight() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mCameraManager.setTorchMode(mCameraId, true);
+                TorchStrength.turnOn(this, mCameraManager, mCameraId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -482,19 +566,10 @@ public class LightActivity extends AppCompatActivity {
 
     public void startNotification(Context context) {
         btnFlash.setBackgroundResource(R.mipmap.ic_switch3on_foreground);
-        Intent intent1 = new Intent(this, LightActivity.class);
-        intent1.putExtra("isNotiOn", true);
-        PendingIntent pIntent1 = PendingIntent.getActivity(this, 0, intent1, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Intent intent2 = new Intent(this, DimerBright.class);
-        PendingIntent pIntent2 = PendingIntent.getActivity(this, 0, intent2, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-
         Intent intentAction = new Intent(this, ActionReceiver.class);
         intentAction.putExtra("action", "action1");
         PendingIntent pIntentlogin = PendingIntent.getBroadcast(this, 1, intentAction, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        CharSequence titulo = getText(R.string.app_name);
-        
         // Asegurar que el canal de notificación existe (para Android O+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel();
@@ -512,21 +587,7 @@ public class LightActivity extends AppCompatActivity {
         }
         
         // Crear y mostrar la notificación
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
-        builder.setContentTitle(titulo);
-       // builder.setContentText("Linterna activa - Toca para controlar");
-        // Usar icono de la app - Android requiere iconos monocromáticos para notificaciones
-        builder.setSmallIcon(R.drawable.bulbon); // Usar drawable en lugar de mipmap
-        builder.setContentIntent(pIntent1);
-        builder.addAction(R.drawable.buttonon, getString(R.string.notif_action_app), pIntent1);
-        builder.addAction(R.drawable.buttonon, getString(R.string.notif_action_dimmer), pIntent2);
-        builder.setOngoing(true);
-        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
-        builder.setAutoCancel(false);
-        builder.setShowWhen(false);
-        builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
-        
-        Notification notification = builder.build();
+        Notification notification = buildFlashNotification(this);
         
         // Mostrar la notificación
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
@@ -552,6 +613,52 @@ public class LightActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Builds the notification-bar flashlight notification. On devices with a dimmable flash
+     * (Android 13+) it shows the brightness level and -/+ actions; otherwise it is unchanged.
+     */
+    public static Notification buildFlashNotification(Context context) {
+        Intent intent1 = new Intent(context, LightActivity.class);
+        intent1.putExtra("isNotiOn", true);
+        PendingIntent pIntent1 = PendingIntent.getActivity(context, 0, intent1, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent intent2 = new Intent(context, DimerBright.class);
+        PendingIntent pIntent2 = PendingIntent.getActivity(context, 0, intent2, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+        CharSequence titulo = context.getText(R.string.app_name);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID);
+        builder.setContentTitle(titulo);
+       // builder.setContentText("Linterna activa - Toca para controlar");
+        // Usar icono de la app - Android requiere iconos monocromáticos para notificaciones
+        builder.setSmallIcon(R.drawable.bulbon); // Usar drawable en lugar de mipmap
+        builder.setContentIntent(pIntent1);
+        int maxLevel = TorchStrength.getMaxLevel(context);
+        if (maxLevel > 1) {
+            // Android shows at most 3 actions: tapping the notification still opens the app
+            Intent down = new Intent(context, TorchLevelReceiver.class).setAction(TorchLevelReceiver.ACTION_LEVEL_DOWN);
+            Intent up = new Intent(context, TorchLevelReceiver.class).setAction(TorchLevelReceiver.ACTION_LEVEL_UP);
+            PendingIntent pDown = PendingIntent.getBroadcast(context, 2, down, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pUp = PendingIntent.getBroadcast(context, 3, up, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentText(context.getString(R.string.notif_brightness_text));
+            builder.setProgress(maxLevel, TorchStrength.getSavedLevel(context), false);
+            builder.addAction(R.drawable.buttonon, context.getString(R.string.notif_action_brightness_down), pDown);
+            builder.addAction(R.drawable.buttonon, context.getString(R.string.notif_action_brightness_up), pUp);
+            builder.addAction(R.drawable.buttonon, context.getString(R.string.notif_action_dimmer), pIntent2);
+            builder.setOnlyAlertOnce(true); // re-posted on every -/+ press
+        } else {
+            builder.addAction(R.drawable.buttonon, context.getString(R.string.notif_action_app), pIntent1);
+            builder.addAction(R.drawable.buttonon, context.getString(R.string.notif_action_dimmer), pIntent2);
+        }
+        builder.setOngoing(true);
+        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        builder.setAutoCancel(false);
+        builder.setShowWhen(false);
+        builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+        return builder.build();
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotificationChannel() {
         String channelName = getString(R.string.channel_name);
@@ -570,11 +677,19 @@ public class LightActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (mCameraManager != null && torchMaxLevel > 1) {
+            mCameraManager.registerTorchCallback(torchCallback, null);
+            // The level may have been changed from the notification while we were in background
+            updateBrightnessUi(TorchStrength.getSavedLevel(this));
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if (mCameraManager != null && torchMaxLevel > 1) {
+            mCameraManager.unregisterTorchCallback(torchCallback);
+        }
     }
 
     @Override
