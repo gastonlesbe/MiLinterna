@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">LightOn Noti</string>
+    <string name="app_name">Luzen</string>
     <string name="Notification">Notification</string>
     <string name="prenderlinterna">Click to turn on the flashlight</string>
     <string name="activaparashake">Activate to shake the phone and turn on the flashlight</string>

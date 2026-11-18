@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">LightOn Noti</string>
+    <string name="app_name">Luzen</string>
     <string name="Notification">Notificação</string>
     <string name="prenderlinterna">Pressione para ligar a lanterna</string>
     <string name="activaparashake">Ative para agitar o telefone e ligue a lanterna</string>
