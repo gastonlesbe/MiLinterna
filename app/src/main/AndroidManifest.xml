@@ -17,6 +17,16 @@
     <uses-feature
         android:name="android.hardware.sensor.gyroscope"
         android:required="false" />
+    <!-- Implied by screenOrientation (app + ad SDK activities) and ACCESS_WIFI_STATE (ad SDKs); not required to run -->
+    <uses-feature
+        android:name="android.hardware.screen.portrait"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.screen.landscape"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.wifi"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET"
         android:required="false"/>
