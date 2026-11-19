@@ -81,12 +81,20 @@ public class LightActivity extends AppCompatActivity {
     private final CameraManager.TorchCallback torchCallback = new CameraManager.TorchCallback() {
         @Override
         public void onTorchModeChanged(String cameraId, boolean enabled) {
-            if (cameraId.equals(mCameraId)) torchActuallyOn = enabled;
+            if (cameraId.equals(mCameraId)) {
+                torchActuallyOn = enabled;
+                TorchStrength.setTorchOn(LightActivity.this, enabled);
+                if (isNotiOn) refreshFlashNotification();
+            }
         }
 
         @Override
         public void onTorchModeUnavailable(String cameraId) {
-            if (cameraId.equals(mCameraId)) torchActuallyOn = false;
+            if (cameraId.equals(mCameraId)) {
+                torchActuallyOn = false;
+                TorchStrength.setTorchOn(LightActivity.this, false);
+                if (isNotiOn) refreshFlashNotification();
+            }
         }
     };
 
@@ -132,7 +140,8 @@ public class LightActivity extends AppCompatActivity {
         // --- APPODEAL BANNER (same pattern as PermissionInspector) ---
         String appodealAppKey = getString(R.string.appodeal_app_key);
         AppodealHelper.initialize(this, appodealAppKey);
-        AppodealHelper.showBanner(this);
+        // Falls back to an AdMob banner in the bottom container when Appodeal has no fill
+        AppodealHelper.showBanner(this, R.id.appodealBannerView);
         // =====================================================================
 
         isTorchOn = false;
@@ -615,7 +624,7 @@ public class LightActivity extends AppCompatActivity {
 
     /**
      * Builds the notification-bar flashlight notification. On devices with a dimmable flash
-     * (Android 13+) it shows the brightness level and -/+ actions; otherwise it is unchanged.
+     * (Android 13+) it shows the brightness level and -/+ actions. A lamp action toggles the torch.
      */
     public static Notification buildFlashNotification(Context context) {
         Intent intent1 = new Intent(context, LightActivity.class);
@@ -633,18 +642,20 @@ public class LightActivity extends AppCompatActivity {
         // Usar icono de la app - Android requiere iconos monocromáticos para notificaciones
         builder.setSmallIcon(R.drawable.bulbon); // Usar drawable en lugar de mipmap
         builder.setContentIntent(pIntent1);
+        boolean torchOn = TorchStrength.isTorchOn(context);
         int maxLevel = TorchStrength.getMaxLevel(context);
         if (maxLevel > 1) {
-            // Android shows at most 3 actions: tapping the notification still opens the app
+            // [-] [+] [APP]: "-" at the lowest level turns the flash off, "+" while off turns it on
+            // at the lowest level. The bar shows 0 while the flash is off.
             Intent down = new Intent(context, TorchLevelReceiver.class).setAction(TorchLevelReceiver.ACTION_LEVEL_DOWN);
             Intent up = new Intent(context, TorchLevelReceiver.class).setAction(TorchLevelReceiver.ACTION_LEVEL_UP);
             PendingIntent pDown = PendingIntent.getBroadcast(context, 2, down, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
             PendingIntent pUp = PendingIntent.getBroadcast(context, 3, up, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
             builder.setContentText(context.getString(R.string.notif_brightness_text));
-            builder.setProgress(maxLevel, TorchStrength.getSavedLevel(context), false);
+            builder.setProgress(maxLevel, torchOn ? TorchStrength.getSavedLevel(context) : 0, false);
             builder.addAction(R.drawable.buttonon, context.getString(R.string.notif_action_brightness_down), pDown);
             builder.addAction(R.drawable.buttonon, context.getString(R.string.notif_action_brightness_up), pUp);
-            builder.addAction(R.drawable.buttonon, context.getString(R.string.notif_action_dimmer), pIntent2);
+            builder.addAction(R.drawable.buttonon, context.getString(R.string.notif_action_app), pIntent1);
             builder.setOnlyAlertOnce(true); // re-posted on every -/+ press
         } else {
             builder.addAction(R.drawable.buttonon, context.getString(R.string.notif_action_app), pIntent1);
@@ -677,7 +688,7 @@ public class LightActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (mCameraManager != null && torchMaxLevel > 1) {
+        if (mCameraManager != null) {
             mCameraManager.registerTorchCallback(torchCallback, null);
             // The level may have been changed from the notification while we were in background
             updateBrightnessUi(TorchStrength.getSavedLevel(this));
@@ -687,7 +698,7 @@ public class LightActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (mCameraManager != null && torchMaxLevel > 1) {
+        if (mCameraManager != null) {
             mCameraManager.unregisterTorchCallback(torchCallback);
         }
     }

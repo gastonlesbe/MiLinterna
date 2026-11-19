@@ -14,8 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 
 /**
- * Handles the brightness -/+ actions of the flashlight notification: steps the saved
- * torch level and re-applies it if the torch is currently on.
+ * Handles the brightness -/+ actions of the flashlight notification. "-" at the lowest level
+ * turns the torch off and "+" while off turns it on at the lowest level (see step()).
  */
 public class TorchLevelReceiver extends BroadcastReceiver {
 
@@ -36,10 +36,9 @@ public class TorchLevelReceiver extends BroadcastReceiver {
             return;
         }
 
-        int max = TorchStrength.getMaxLevel(appContext);
+        final int max = TorchStrength.getMaxLevel(appContext);
         if (max <= 1) return;
-        final int level = Math.max(1, Math.min(max, TorchStrength.getSavedLevel(appContext) + step));
-        TorchStrength.saveLevel(appContext, level);
+        final int stepFinal = step;
 
         final CameraManager cm = (CameraManager) appContext.getSystemService(Context.CAMERA_SERVICE);
         final String cameraId = TorchStrength.findFlashCameraId(cm);
@@ -67,9 +66,7 @@ public class TorchLevelReceiver extends BroadcastReceiver {
                 if (done[0]) return;
                 done[0] = true;
                 cm.unregisterTorchCallback(this);
-                if (torchOn) {
-                    TorchStrength.applyLevel(cm, cameraId, level);
-                }
+                step(appContext, cm, cameraId, torchOn, stepFinal, max);
                 refreshNotification(appContext);
                 pendingResult.finish();
             }
@@ -81,10 +78,35 @@ public class TorchLevelReceiver extends BroadcastReceiver {
                 if (done[0]) return;
                 done[0] = true;
                 cm.unregisterTorchCallback(callback);
+                // No callback: fall back to the last known state.
+                step(appContext, cm, cameraId, TorchStrength.isTorchOn(appContext), stepFinal, max);
                 refreshNotification(appContext);
                 pendingResult.finish();
             }
         }, TORCH_STATE_TIMEOUT_MS);
+    }
+
+    /**
+     * "+" while off turns the torch on at level 1; "+" while on raises the level (up to max).
+     * "-" while on lowers the level; "-" at level 1 turns the torch off; "-" while off does nothing.
+     */
+    private static void step(Context context, CameraManager cm, String cameraId, boolean torchOn, int step, int max) {
+        int saved = TorchStrength.getSavedLevel(context);
+        if (step > 0) {
+            int level = torchOn ? Math.min(max, saved + 1) : 1;
+            TorchStrength.saveLevel(context, level);
+            TorchStrength.applyLevel(cm, cameraId, level);
+            TorchStrength.setTorchOn(context, true);
+        } else if (torchOn) {
+            if (saved <= 1) {
+                TorchStrength.turnOff(cm, cameraId);
+                TorchStrength.setTorchOn(context, false);
+            } else {
+                int level = saved - 1;
+                TorchStrength.saveLevel(context, level);
+                TorchStrength.applyLevel(cm, cameraId, level);
+            }
+        }
     }
 
     /** Re-posts the flashlight notification (new level in its text) only if it is still showing. */

@@ -118,6 +118,28 @@ public final class TorchStrength {
         }
     }
 
+    /** Turns the torch off. */
+    public static void turnOff(CameraManager cm, String cameraId) {
+        if (cm == null || cameraId == null) return;
+        try {
+            cm.setTorchMode(cameraId, false);
+        } catch (Exception e) {
+            Log.e(TAG, "Error turning torch off", e);
+        }
+    }
+
+    /** Last known torch state, kept so the notification can be built without a camera callback. */
+    public static boolean isTorchOn(Context context) {
+        return context.getSharedPreferences(TORCH_STATE_PREFS, Context.MODE_PRIVATE).getBoolean(KEY_IS_ON, false);
+    }
+
+    public static void setTorchOn(Context context, boolean on) {
+        context.getSharedPreferences(TORCH_STATE_PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_IS_ON, on).apply();
+    }
+
+    private static final String TORCH_STATE_PREFS = "torch_state";
+    private static final String KEY_IS_ON = "is_on";
+
     private static int clamp(int level, int max) {
         return Math.max(1, Math.min(level, max));
     }

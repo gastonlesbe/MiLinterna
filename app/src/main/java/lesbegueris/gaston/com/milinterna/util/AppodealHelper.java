@@ -19,11 +19,26 @@ public class AppodealHelper {
         }
     }
 
+    /** Shows the Appodeal banner without a fallback. */
     public static void showBanner(Activity activity) {
+        showBanner(activity, 0);
+    }
+
+    /**
+     * Shows the Appodeal banner. If Appodeal has no fill and fallbackContainerId is not 0,
+     * an AdMob banner is loaded once into that container instead. Once the AdMob fallback is
+     * showing, a later Appodeal banner is not shown, so two banners never appear at the same time.
+     */
+    public static void showBanner(Activity activity, int fallbackContainerId) {
+        final boolean[] admobFallbackShown = {false};
         try {
             Appodeal.setBannerCallbacks(new BannerCallbacks() {
                 @Override
                 public void onBannerLoaded(int height, boolean isPrecache) {
+                    if (admobFallbackShown[0]) {
+                        Log.d(TAG, "Banner loaded but AdMob fallback is already showing; skipping Appodeal");
+                        return;
+                    }
                     Log.d(TAG, "Banner loaded (height=" + height + "), showing...");
                     activity.runOnUiThread(() -> {
                         boolean shown = Appodeal.show(activity, Appodeal.BANNER);
@@ -34,6 +49,14 @@ public class AppodealHelper {
                 @Override
                 public void onBannerFailedToLoad() {
                     Log.w(TAG, "Banner failed to load");
+                    if (fallbackContainerId != 0 && !admobFallbackShown[0]) {
+                        admobFallbackShown[0] = true;
+                        activity.runOnUiThread(() -> {
+                            if (activity.isFinishing() || activity.isDestroyed()) return;
+                            Log.d(TAG, "No Appodeal fill: showing AdMob banner fallback");
+                            AdMobHelper.showBanner(activity, fallbackContainerId);
+                        });
+                    }
                 }
 
                 @Override
